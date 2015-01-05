@@ -1,0 +1,13 @@
+{
+	"author": "Mike Wilcox @clubajax",
+	"name": "dom",
+	"main":"dom.js",
+	"description": "A simple library for creating, and modifying DOM nodes.",
+	"version": "0.0.1",
+	"license": "Unlicense",
+    "readmeFilename": "README.md",
+	"repository": {
+        "type": "git",
+        "url": "git://github.com/clubajax/dom.git"
+    }
+}

@@ -153,7 +153,7 @@
         var nodes = node.querySelectorAll(selector);
 
         // none found; return null;
-        if(!nodes){ return null; }
+        if(!nodes.length){ return null; }
 
         // only one found, return single node
         if(nodes.length === 1){ return nodes[0];}

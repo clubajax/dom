@@ -141,8 +141,27 @@
                 height: node.innerHeight
             };
         }
-        // get node dimensions
-        return getNode(node).getBoundingClientRect();
+         // node dimensions
+        // returned object is immutable
+        // add scroll positioning and convenience abbreviations
+        var
+            dimensions = getNode(node).getBoundingClientRect(),
+            box = {
+                top: dimensions.top,
+                right: dimensions.right,
+                bottom: dimensions.bottom,
+                left: dimensions.left,
+                height: dimensions.height,
+                h: dimensions.height,
+                width: dimensions.width,
+                w: dimensions.width,
+                scrollY: window.scrollY,
+                scrollX: window.scrollX,
+                x: dimensions.left + window.scrollX,
+                y: dimensions.top + window.scrollY
+            };
+
+        return box;
     }
 
     function query(node, selector){

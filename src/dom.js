@@ -25,7 +25,7 @@
             bottom:1,
             maxWidth:1,
             'max-width':1,
-			minWidth:1,
+            minWidth:1,
             'min-width':1,
             maxHeight:1,
             'max-height':1
@@ -43,19 +43,20 @@
     }
 
     function isNode(item){
-        return (/HTML/).test(Object.prototype.toString.call( item ));
+        // safer test for custom elements in FF (with wc shim)
+        return typeof item === 'object' && typeof item.innerHTML === 'string';
     }
 
     function getNode(item){
-        
+
         if(!item){ return item; }
         if(typeof item === 'string'){
             return document.getElementById(item);
         }
         // de-jqueryify
-		return item.get ? item.get(0) :
-			// item is a dom node
-			item;
+        return item.get ? item.get(0) :
+            // item is a dom node
+            item;
     }
 
     function byId(id){
@@ -68,7 +69,7 @@
         //
         var key, computed;
         if(typeof prop === 'object'){
-			// object setter
+            // object setter
             for(key in prop){
                 if(prop.hasOwnProperty(key)){
                     style(node, key, prop[key]);
@@ -76,14 +77,14 @@
             }
             return null;
         }else if(value !== undefined){
-			// property setter
+            // property setter
             if(typeof value === 'number' && isDimension[prop]){
                 value += 'px';
             }
             node.style[prop] = value;
 
             if(prop === 'userSelect'){
-				value = !!value ? 'text' : 'none';
+                value = !!value ? 'text' : 'none';
                 style(node, {
                     webkitTouchCallout: value,
                     webkitUserSelect: value,
@@ -93,13 +94,16 @@
                 });
             }
         }
-		
-		// getter, if a simple style
+
+        // getter, if a simple style
         if(node.style[prop]){
+            if(isDimension[prop]){
+                return parseInt(node.style[prop], 10);
+            }
             return node.style[prop];
         }
 
-		// getter, computed
+        // getter, computed
         computed = getComputedStyle(node, prop);
         if(computed[prop]){
             if(/\d/.test(computed[prop])){
@@ -141,7 +145,7 @@
                 height: node.innerHeight
             };
         }
-         // node dimensions
+        // node dimensions
         // returned object is immutable
         // add scroll positioning and convenience abbreviations
         var
@@ -157,8 +161,8 @@
                 w: dimensions.width,
                 scrollY: window.scrollY,
                 scrollX: window.scrollX,
-                x: dimensions.left + window.scrollX,
-                y: dimensions.top + window.scrollY
+                x: dimensions.left + window.pageXOffset,
+                y: dimensions.top + window.pageYOffset
             };
 
         return box;
@@ -171,8 +175,8 @@
         }
         var nodes = node.querySelectorAll(selector);
 
-        // none found; return null;
-        if(!nodes.length){ return null; }
+        // none found; return [] or null?
+        if(!nodes.length){ return []; }
 
         // only one found, return single node
         if(nodes.length === 1){ return nodes[0];}
@@ -181,19 +185,27 @@
         return Array.prototype.slice.call(nodes);
 
     }
-	
-	function toDom(html, options, parent){
+
+    function toDom(html, options, parent){
         // create a node from an HTML string
-		// private; used by main dom method
-        destroyer.innerHTML = html;
-		parent = byId(parent || options);
+        var node = dom('div', {html: html});
+        parent = byId(parent || options);
         if(parent){
-            while(destroyer.firstChild){
-				parent.appendChild(destroyer.firstChild);
+            while(node.firstChild){
+                parent.appendChild(node.firstChild);
             }
-            return parent.firstChild;
+            return node.firstChild;
         }
-        return destroyer.firstChild;
+        if(html.indexOf('<') !== 0){
+            return node;
+        }
+        return node.firstChild;
+    }
+
+    function toFrag(html){
+        var frag = document.createDocumentFragment();
+        frag.innerHTML = html;
+        return frag;
     }
 
     function dom(nodeType, options, parent, prepend){
@@ -230,8 +242,8 @@
         if(options.cssText){
             node.style.cssText = options.cssText;
         }
-		
-		if(options.id){
+
+        if(options.id){
             node.id = options.id;
         }
 
@@ -265,30 +277,71 @@
 
     function clean(node, dispose){
         //	Removes all child nodes
-		//		dispose: destroy child nodes
-		if(dispose){
-			while(node.children.length){
-				destroy(node.children[0]);
-			}	
-			return;
-		}
+        //		dispose: destroy child nodes
+        if(dispose){
+            while(node.children.length){
+                destroy(node.children[0]);
+            }
+            return;
+        }
         while(node.children.length){
             node.removeChild(node.children[0]);
         }
     }
 
-    function show(node){
-        getNode(node).classList.remove('off');
-    }
+    function ancestor (node, selector){
+        // gets the ancestor of node based on selector criteria
+        // useful for getting the target node when a child node is clicked upon
+        //
+        // USAGE
+        //      on.selector(childNode, '.app.active');
+        //      on.selector(childNode, '#thinger');
+        //      on.selector(childNode, 'div');
+        //	DOES NOT SUPPORT:
+        //		combinations of above
+        var
+            test,
+            parent = node;
 
-    function hide(node){
-        getNode(node).classList.add('off');
+        if(selector.indexOf('.') === 0){
+            // className
+            selector = selector.replace('.', ' ').trim();
+            test = function(n){
+                return n.classList.contains(selector);
+            };
+        }
+        else if(selector.indexOf('#') === 0){
+            // node id
+            selector = selector.replace('#', '').trim();
+            test = function(n){
+                return n.id === selector;
+            };
+        }
+        else if(selector.indexOf('[') > -1){
+            // attribute
+            console.error('attribute selectors are not yet supported');
+        }
+        else{
+            // assuming node name
+            selector = selector.toUpperCase();
+            test = function(n){
+                return n.nodeName === selector;
+            };
+        }
+
+        while(parent){
+            if(parent === document.body || parent === document){ return false; }
+            if(test(parent)){ break; }
+            parent = parent.parentNode;
+        }
+
+        return parent;
     }
 
     dom.classList = {
         remove: function(node, names){
             if(!node || !names){
-				console.error('dom.classList.remove should include a node and a className');
+                console.error('dom.classList.remove should include a node and a className');
                 return;
             }
             names = Array.isArray(names) ? names : names.indexOf(' ') > -1 ? names.trim().split(' ') : [names];
@@ -341,9 +394,10 @@
     dom.style = style;
     dom.destroy = destroy;
     dom.uid = uid;
-    dom.show = show;
-    dom.hide = hide;
-	dom.isNode = isNode;
+    dom.isNode = isNode;
+    dom.ancestor = ancestor;
+    dom.toDom = toDom;
+    dom.toFrag = toFrag;
 
     return dom;
 }));

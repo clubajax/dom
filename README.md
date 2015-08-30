@@ -26,19 +26,6 @@ absolute path. If using as a global or with Browserify, it is suggested that you
 	
 `dom` has no dependencies.
 
-## Comes with Stub Included!
-
-The benefit of using `dom` exclusively in your code, is it comes complete with a "dom stub",
-which can be substituted in Node.js unit tests.
-
-The stub is as described, a stub, meaning most of the functions are NOOPs. But there are a few
-functions that work as mocks, meaning they are functional with dummy/partial data. Simple objects
-are returned as dom nodes, which should result to truthy in tests. These simple objects have an
-`innerHTML` getter/setter so text comparisons can also be done. They also keep track of their
-children and parent nodes, so some DOM manipulation can be simulated.
-
-It is reccomended that the stub/dom.js should be looked over to learn of its full functionality.
-
 ## The `dom` function
 
 `dom` is the main function, and has several more functions attached to that function. So you can
@@ -182,6 +169,19 @@ reverse. It is not easily known if the node has `display:block` or `display:inli
 There is extended functionality in `add` and `remove`: standard functionality doesn't allow for Arrays or
 strings with spaces (ergo, two classes at once). `dom.classList` allows for this.
 
+
+## Comes with Stub Included!
+
+The benefit of using `dom` exclusively in your code, is it comes complete with a "dom stub",
+which can be substituted in Node.js unit tests.
+
+The stub is as described, a stub, meaning most of the functions are NOOPs. But there are a few
+functions that work as mocks, meaning they are functional with dummy/partial data. Simple objects
+are returned as dom nodes, which should result to truthy in tests. These simple objects have an
+`innerHTML` getter/setter so text comparisons can also be done. They also keep track of their
+children and parent nodes, so some DOM manipulation can be simulated.
+
+It is recommended that the stub/dom.js should be looked over to learn of its full functionality.
 
 ## License
 

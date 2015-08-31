@@ -1,22 +1,15 @@
 # dom
 
-## Description
+A convenience library for common DOM methods.
 
-`dom` is a convenience library for common DOM methods. Its primary function is to make it more
-finger-friendly to create, modify, and delete DOM nodes, and to add and remove styles and attributes.
-There is some extended functionality as noted in the API docs below.
+## Getting Started
 
-## Support
+To install using bower:
 
-`dom` supports modern browsers, IE9 and up. Some modern DOM methods like `classList` are expected.
+	bower install clubajax/dom --save
 
-This library uses UMD, meaning it can be consumed with RequireJS, Browserify (CommonJS),
-or a standard browser global.
-
-## Installation
-
-You can clone the repository with your generic clone commands as a standalone repository or
-submodule.
+You may also use `npm` if you prefer. Or, you can clone the repository with your generic clone commands as a standalone 
+repository or submodule.
 
 	git clone git://github.com/clubajax/dom.git
 
@@ -25,6 +18,18 @@ absolute path. If using as a global or with Browserify, it is suggested that you
 *NPM run script* to copy the `dom` script to a location more convenient for your project.
 	
 `dom` has no dependencies.
+
+## Description
+
+The primary function is to make it more finger-friendly to create, modify, and delete DOM nodes, and to add and remove 
+styles and attributes. There is some extended functionality as noted in the API docs below.
+
+## Support
+
+`dom` supports modern browsers, IE9 and up. Some modern DOM methods like `classList` are expected.
+
+This library uses UMD, meaning it can be consumed with RequireJS, Browserify (CommonJS),
+or a standard browser global.
 
 ## The `dom` function
 

@@ -406,6 +406,7 @@
 
     dom.clean = clean;
     dom.query = query;
+    dom.queryAll = queryAll;
     dom.byId = byId;
     dom.attr = attr;
     dom.box = box;

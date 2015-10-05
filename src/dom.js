@@ -169,6 +169,8 @@
     }
 
     function query(node, selector){
+        // TODO: Always return one node
+        // Deprecate old way of return one or many (or null or []) 
         if(!selector){
             selector = node;
             node = document;
@@ -182,6 +184,20 @@
         if(nodes.length === 1){ return nodes[0];}
 
         // multiple found; convert to Array and return it
+        return Array.prototype.slice.call(nodes);
+
+    }
+    
+    function queryAll(node, selector){
+        if(!selector){
+            selector = node;
+            node = document;
+        }
+        var nodes = node.querySelectorAll(selector);
+
+        if(!nodes.length){ return []; }
+
+        // convert to Array and return it
         return Array.prototype.slice.call(nodes);
 
     }

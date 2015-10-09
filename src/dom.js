@@ -175,20 +175,7 @@
             selector = node;
             node = document;
         }
-        var nodes = node.querySelectorAll(selector);
-
-        // none found; return [] or null?
-        if(!nodes.length){ 
-            console.warn('Using deprecated return of [] for dom.query');
-            return []; }
-
-        // only one found, return single node
-        if(nodes.length === 1){ return nodes[0];}
-
-        console.warn('Using dom.query to find multiple nodes. Use dom.queryAll instead');
-        // multiple found; convert to Array and return it
-        return Array.prototype.slice.call(nodes);
-
+        return node.querySelector(selector);
     }
     
     function queryAll(node, selector){

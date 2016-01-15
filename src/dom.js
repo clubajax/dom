@@ -295,6 +295,7 @@
     }
 
     function ancestor (node, selector){
+        // TODO: replace this with 'closest' and 'matches'
         // gets the ancestor of node based on selector criteria
         // useful for getting the target node when a child node is clicked upon
         //
@@ -345,41 +346,36 @@
 
     dom.classList = {
         remove: function(node, names){
-            if(!node || !names){
-                console.error('dom.classList.remove should include a node and a className');
-                return;
-            }
-            names = Array.isArray(names) ? names : names.indexOf(' ') > -1 ? names.trim().split(' ') : [names];
-            names.forEach(function(name){
-                if(name){
-                    node.classList.remove(name.trim());
-                }
+            toArray(names).forEach(function(name){
+                node.classList.remove(name);
             });
         },
         add: function(node, names){
-            if(!node || !names){
-                return;
-            }
-            names = Array.isArray(names) ? names : names.indexOf(' ') > -1 ? names.trim().split(' ') : [names];
-            names.forEach(function(name){
-                if(name){
-                    node.classList.add(name.trim());
-                }
+            toArray(names).forEach(function(name){
+                node.classList.add(name);
             });
         },
         contains: function(node, name){
-            if(!node || !name){
-                return false;
-            }
-            return node.classList.contains(name);
+            return toArray(names).every(function (name) {
+                return node.classList.contains(name);
+            });
         },
         toggle: function(node, name){
-            if(!node || !name){
-                return null;
-            }
-            return node.classList.toggle(name);
+            toArray(names).forEach(function(name){
+                node.classList.toggle(name);
+            });
         }
     };
+
+    function toArray(names){
+        if(!names){
+            console.error('dom.classList should include a node and a className');
+            return [];
+        }
+        return names.split(' ').map(function (name) {
+            return name.trim();
+        });
+    }
 
     if (!window.requestAnimationFrame) {
         dom.requestAnimationFrame = function(callback){

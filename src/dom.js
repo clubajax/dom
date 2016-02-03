@@ -355,14 +355,14 @@
                 node.classList.add(name);
             });
         },
-        contains: function(node, name){
+        contains: function(node, names){
             return toArray(names).every(function (name) {
                 return node.classList.contains(name);
             });
         },
-        toggle: function(node, name){
+        toggle: function(node, names, value){
             toArray(names).forEach(function(name){
-                node.classList.toggle(name);
+                node.classList.toggle(name, value);
             });
         }
     };

@@ -107,7 +107,10 @@
         computed = getComputedStyle(node, prop);
         if(computed[prop]){
             if(/\d/.test(computed[prop])){
-                return parseInt(computed[prop], 10);
+                if(!isNaN(parseInt(computed[prop], 10))){
+                    return parseInt(computed[prop], 10);
+                }
+                return computed[prop];
             }
             return computed[prop];
         }

@@ -245,7 +245,6 @@
         }
 
         if(options.html !== undefined){
-            console.log('options.html', options.html);
             node.innerHTML = options.html;
         }
 

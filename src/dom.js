@@ -237,14 +237,16 @@
             className = options.css || options.className,
             node = document.createElement(nodeType);
 
+        options.html = options.html === undefined ? options.innerHTML : options.html;
         parent = getNode(parent);
 
         if(className){
             node.className = className;
         }
 
-        if(options.html || options.innerHTML){
-            node.innerHTML = options.html || options.innerHTML;
+        if(options.html !== undefined){
+            console.log('options.html', options.html);
+            node.innerHTML = options.html;
         }
 
         if(options.cssText){

@@ -390,7 +390,20 @@
             window.requestAnimationFrame(cb);
         };
     }
+    
+    function normalize(val){
+        if(val === 'false'){
+            return false;
+        }else if(val === 'true'){
+            return true;
+        }
+        if(!isNaN(parseFloat(val))){
+            return parseFloat(val);
+        }
+        return val;
+    }
 
+    dom.normalize = normalize;
     dom.clean = clean;
     dom.query = query;
     dom.queryAll = queryAll;

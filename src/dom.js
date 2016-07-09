@@ -172,8 +172,6 @@
     }
 
     function query(node, selector){
-        // TODO: Always return one node
-        // Deprecate old way of return one or many (or null or []) 
         if(!selector){
             selector = node;
             node = document;
@@ -210,13 +208,46 @@
         return node.firstChild;
     }
 
-    function toFrag(html){
+    function toFrag (html){
         var frag = document.createDocumentFragment();
         frag.innerHTML = html;
         return frag;
     }
 
-    function dom(nodeType, options, parent, prepend){
+    function addChildren (node, children) {
+        if(Array.isArray(children)){
+            for(var i = 0; i < children.length; i++){
+                node.appendChild(children[i]);
+            }
+        }
+        else{
+            node.appendChild(children);
+        }
+    }
+
+    function addContent (node, options) {
+        var html;
+        if(options.html !== undefined || options.innerHTML !== undefined){
+            html = options.html || options.innerHTML;
+            if(typeof html === 'object'){
+                addChildren(node, html);
+            }
+            else if(html.indexOf('<') === 0) {
+                node.innerHTML = html;
+            }
+            else{
+                node.appendChild(document.createTextNode(html));
+            }
+        }
+        if(options.text){
+            node.appendChild(document.createTextNode(options.text));
+        }
+        if(options.children){
+            addChildren(node, options.children);
+        }
+    }
+    
+    function dom (nodeType, options, parent, prepend){
         // create a node
         // if first argument is a string and starts with <, it is assumed
         // to use toDom, and creates a node from HTML. Optional second arg is
@@ -234,20 +265,17 @@
 
         options = options || {};
         var
-            className = options.css || options.className,
+            className = options.css || options.className || options.class,
             node = document.createElement(nodeType);
 
-        options.html = options.html === undefined ? options.innerHTML : options.html;
         parent = getNode(parent);
 
         if(className){
             node.className = className;
         }
-
-        if(options.html !== undefined){
-            node.innerHTML = options.html;
-        }
-
+        
+        addContent(node, options);
+        
         if(options.cssText){
             node.style.cssText = options.cssText;
         }

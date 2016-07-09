@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 5//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+    <title>Test dom</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mocha/2.5.3/mocha.css">
+    <script src="../src/dom.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mocha/2.5.3/mocha.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chai/3.5.0/chai.min.js"></script>
+</head>
+<body>
+    <h1>dom test</h1>
+    <div id="mocha"></div>
+    <script>
+
+        mocha.setup('tdd');
+
+
+        suite('dom', function() {
+            var
+                body = document.body,
+                expect = chai.expect,
+                dom = window.dom;
+
+            test('it should create a node with innerHTML', function () {
+                var node;
+
+                node = dom('div', {html: '<span>span</span>'});
+                expect(dom.queryAll(node, 'span').length).to.equal(1);
+                dom.destroy(node);
+
+                node = dom('div', {innerHTML: '<span>span</span>'});
+                expect(dom.queryAll(node, 'span').length).to.equal(1);
+                dom.destroy(node);
+            });
+
+            test('it should create a node with text', function () {
+                var node;
+
+                node = dom('div', {html: 'text'});
+                expect(node.textContent).to.equal('text');
+                dom.destroy(node);
+
+                node = dom('div', {text: 'text'});
+                expect(node.textContent).to.equal('text');
+                dom.destroy(node);
+            });
+
+            test('it should create a node with a child node', function () {
+                var node;
+
+                node = dom('div', {html: dom('span')});
+                expect(dom.queryAll(node, 'span').length).to.equal(1);
+                dom.destroy(node);
+            });
+
+            test('it should create a node with children', function () {
+                var node;
+
+                node = dom('div', {html: [dom('span'),dom('span'),dom('span')]});
+                expect(dom.queryAll(node, 'span').length).to.equal(3);
+                dom.destroy(node);
+            });
+
+        });
+
+        mocha.run();
+    </script>
+</body>
+</html>

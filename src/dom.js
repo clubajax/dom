@@ -1,5 +1,5 @@
 /* UMD.define */ (function (root, factory) {
-    if (typeof define === 'function' && define.amd) { define([], factory); } else if (typeof exports === 'object') { module.exports = factory(); } else { root.returnExports = factory(); window.dom = factory(); }
+    if (typeof customLoader === 'function'){ customLoader(factory, 'dom'); }else if (typeof define === 'function' && define.amd) { define([], factory); } else if (typeof exports === 'object') { module.exports = factory(); } else { root.returnExports = factory(); window.dom = factory(); }
 }(this, function () {
     //  convenience library for common DOM methods
     //      dom()
@@ -107,7 +107,10 @@
         computed = getComputedStyle(node, prop);
         if(computed[prop]){
             if(/\d/.test(computed[prop])){
-                return parseInt(computed[prop], 10);
+                if(!isNaN(parseInt(computed[prop], 10))){
+                    return parseInt(computed[prop], 10);
+                }
+                return computed[prop];
             }
             return computed[prop];
         }
@@ -169,21 +172,26 @@
     }
 
     function query(node, selector){
+        // TODO: Always return one node
+        // Deprecate old way of return one or many (or null or []) 
+        if(!selector){
+            selector = node;
+            node = document;
+        }
+        return node.querySelector(selector);
+    }
+    
+    function queryAll(node, selector){
         if(!selector){
             selector = node;
             node = document;
         }
         var nodes = node.querySelectorAll(selector);
 
-        // none found; return [] or null?
         if(!nodes.length){ return []; }
 
-        // only one found, return single node
-        if(nodes.length === 1){ return nodes[0];}
-
-        // multiple found; convert to Array and return it
+        // convert to Array and return it
         return Array.prototype.slice.call(nodes);
-
     }
 
     function toDom(html, options, parent){
@@ -229,14 +237,15 @@
             className = options.css || options.className,
             node = document.createElement(nodeType);
 
+        options.html = options.html === undefined ? options.innerHTML : options.html;
         parent = getNode(parent);
 
         if(className){
             node.className = className;
         }
 
-        if(options.html || options.innerHTML){
-            node.innerHTML = options.html || options.innerHTML;
+        if(options.html !== undefined){
+            node.innerHTML = options.html;
         }
 
         if(options.cssText){
@@ -290,6 +299,7 @@
     }
 
     function ancestor (node, selector){
+        // TODO: replace this with 'closest' and 'matches'
         // gets the ancestor of node based on selector criteria
         // useful for getting the target node when a child node is clicked upon
         //
@@ -340,41 +350,36 @@
 
     dom.classList = {
         remove: function(node, names){
-            if(!node || !names){
-                console.error('dom.classList.remove should include a node and a className');
-                return;
-            }
-            names = Array.isArray(names) ? names : names.indexOf(' ') > -1 ? names.trim().split(' ') : [names];
-            names.forEach(function(name){
-                if(name){
-                    node.classList.remove(name.trim());
-                }
+            toArray(names).forEach(function(name){
+                node.classList.remove(name);
             });
         },
         add: function(node, names){
-            if(!node || !names){
-                return;
-            }
-            names = Array.isArray(names) ? names : names.indexOf(' ') > -1 ? names.trim().split(' ') : [names];
-            names.forEach(function(name){
-                if(name){
-                    node.classList.add(name.trim());
-                }
+            toArray(names).forEach(function(name){
+                node.classList.add(name);
             });
         },
-        contains: function(node, name){
-            if(!node || !name){
-                return false;
-            }
-            return node.classList.contains(name);
+        contains: function(node, names){
+            return toArray(names).every(function (name) {
+                return node.classList.contains(name);
+            });
         },
-        toggle: function(node, name){
-            if(!node || !name){
-                return null;
-            }
-            return node.classList.toggle(name);
+        toggle: function(node, names, value){
+            toArray(names).forEach(function(name){
+                node.classList.toggle(name, value);
+            });
         }
     };
+
+    function toArray(names){
+        if(!names){
+            console.error('dom.classList should include a node and a className');
+            return [];
+        }
+        return names.split(' ').map(function (name) {
+            return name.trim();
+        });
+    }
 
     if (!window.requestAnimationFrame) {
         dom.requestAnimationFrame = function(callback){
@@ -385,9 +390,23 @@
             window.requestAnimationFrame(cb);
         };
     }
+    
+    function normalize(val){
+        if(val === 'false'){
+            return false;
+        }else if(val === 'true'){
+            return true;
+        }
+        if(!isNaN(parseFloat(val))){
+            return parseFloat(val);
+        }
+        return val;
+    }
 
+    dom.normalize = normalize;
     dom.clean = clean;
     dom.query = query;
+    dom.queryAll = queryAll;
     dom.byId = byId;
     dom.attr = attr;
     dom.box = box;

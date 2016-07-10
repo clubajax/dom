@@ -33,7 +33,7 @@
         uids = {},
         destroyer = document.createElement('div');
 
-    function uid(type){
+    function uid (type){
         if(!uids[type]){
             uids[type] = [];
         }
@@ -42,12 +42,12 @@
         return id;
     }
 
-    function isNode(item){
+    function isNode (item){
         // safer test for custom elements in FF (with wc shim)
         return typeof item === 'object' && typeof item.innerHTML === 'string';
     }
 
-    function getNode(item){
+    function getNode (item){
 
         if(!item){ return item; }
         if(typeof item === 'string'){
@@ -59,11 +59,11 @@
             item;
     }
 
-    function byId(id){
+    function byId (id){
         return getNode(id);
     }
 
-    function style(node, prop, value){
+    function style (node, prop, value){
         // get/set node style(s)
         //      prop: string or object
         //
@@ -117,7 +117,7 @@
         return '';
     }
 
-    function attr(node, prop, value){
+    function attr (node, prop, value){
         // get/set node attribute(s)
         //      prop: string or object
         //
@@ -141,7 +141,7 @@
         return node.getAttribute(prop);
     }
 
-    function box(node){
+    function box (node){
         if(node === window){
             return {
                 width: node.innerWidth,
@@ -171,7 +171,7 @@
         return box;
     }
 
-    function query(node, selector){
+    function query (node, selector){
         if(!selector){
             selector = node;
             node = document;
@@ -179,7 +179,7 @@
         return node.querySelector(selector);
     }
     
-    function queryAll(node, selector){
+    function queryAll (node, selector){
         if(!selector){
             selector = node;
             node = document;
@@ -192,7 +192,7 @@
         return Array.prototype.slice.call(nodes);
     }
 
-    function toDom(html, options, parent){
+    function toDom (html, options, parent){
         // create a node from an HTML string
         var node = dom('div', {html: html});
         parent = byId(parent || options);
@@ -206,6 +206,36 @@
             return node;
         }
         return node.firstChild;
+    }
+
+    function fromDom (node) {
+        function getAttrs (node) {
+            var att, i, attrs = {};
+            for(i = 0; i < node.attributes.length; i++){
+                att = node.attributes[i];
+                attrs[att.localName] = normalize(att.value === '' ? true : att.value);
+            }
+            return attrs;
+        }
+        function getText (node) {
+            var i, t, text = '';
+            for(i = 0; i < node.childNodes.length; i++){
+                t = node.childNodes[i];
+                if(t.nodeType === 3 && t.textContent.trim()){
+                    text += t.textContent.trim();
+                }
+            }
+            return text;
+        }
+        var i, object = getAttrs(node);
+        object.text = getText(node);
+        object.children = [];
+        if(node.children.length){
+            for(i = 0; i < node.children.length; i++){
+                object.children.push(fromDom(node.children[i]));
+            }
+        }
+        return object;
     }
 
     function toFrag (html){
@@ -303,7 +333,7 @@
         return node;
     }
 
-    function destroy(node){
+    function destroy (node){
         // destroys a node completely
         //
         if(node) {
@@ -312,7 +342,7 @@
         }
     }
 
-    function clean(node, dispose){
+    function clean (node, dispose){
         //	Removes all child nodes
         //		dispose: destroy child nodes
         if(dispose){
@@ -377,29 +407,29 @@
     }
 
     dom.classList = {
-        remove: function(node, names){
+        remove: function (node, names){
             toArray(names).forEach(function(name){
                 node.classList.remove(name);
             });
         },
-        add: function(node, names){
+        add: function (node, names){
             toArray(names).forEach(function(name){
                 node.classList.add(name);
             });
         },
-        contains: function(node, names){
+        contains: function (node, names){
             return toArray(names).every(function (name) {
                 return node.classList.contains(name);
             });
         },
-        toggle: function(node, names, value){
+        toggle: function (node, names, value){
             toArray(names).forEach(function(name){
                 node.classList.toggle(name, value);
             });
         }
     };
 
-    function toArray(names){
+    function toArray (names){
         if(!names){
             console.error('dom.classList should include a node and a className');
             return [];
@@ -419,7 +449,7 @@
         };
     }
     
-    function normalize(val){
+    function normalize (val){
         if(val === 'false'){
             return false;
         }else if(val === 'true'){
@@ -444,6 +474,7 @@
     dom.isNode = isNode;
     dom.ancestor = ancestor;
     dom.toDom = toDom;
+    dom.fromDom = fromDom;
     dom.toFrag = toFrag;
 
     return dom;

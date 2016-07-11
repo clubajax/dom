@@ -44,7 +44,7 @@
 
     function isNode (item){
         // safer test for custom elements in FF (with wc shim)
-        return typeof item === 'object' && typeof item.innerHTML === 'string';
+        return !!item && typeof item === 'object' && typeof item.innerHTML === 'string';
     }
 
     function getNode (item){

@@ -33,7 +33,7 @@
         uids = {},
         destroyer = document.createElement('div');
 
-    function uid(type){
+    function uid (type){
         if(!uids[type]){
             uids[type] = [];
         }
@@ -42,12 +42,12 @@
         return id;
     }
 
-    function isNode(item){
+    function isNode (item){
         // safer test for custom elements in FF (with wc shim)
-        return typeof item === 'object' && typeof item.innerHTML === 'string';
+        return !!item && typeof item === 'object' && typeof item.innerHTML === 'string';
     }
 
-    function getNode(item){
+    function getNode (item){
 
         if(!item){ return item; }
         if(typeof item === 'string'){
@@ -59,11 +59,11 @@
             item;
     }
 
-    function byId(id){
+    function byId (id){
         return getNode(id);
     }
 
-    function style(node, prop, value){
+    function style (node, prop, value){
         // get/set node style(s)
         //      prop: string or object
         //
@@ -117,7 +117,7 @@
         return '';
     }
 
-    function attr(node, prop, value){
+    function attr (node, prop, value){
         // get/set node attribute(s)
         //      prop: string or object
         //
@@ -141,7 +141,7 @@
         return node.getAttribute(prop);
     }
 
-    function box(node){
+    function box (node){
         if(node === window){
             return {
                 width: node.innerWidth,
@@ -171,9 +171,7 @@
         return box;
     }
 
-    function query(node, selector){
-        // TODO: Always return one node
-        // Deprecate old way of return one or many (or null or []) 
+    function query (node, selector){
         if(!selector){
             selector = node;
             node = document;
@@ -181,7 +179,7 @@
         return node.querySelector(selector);
     }
     
-    function queryAll(node, selector){
+    function queryAll (node, selector){
         if(!selector){
             selector = node;
             node = document;
@@ -194,7 +192,7 @@
         return Array.prototype.slice.call(nodes);
     }
 
-    function toDom(html, options, parent){
+    function toDom (html, options, parent){
         // create a node from an HTML string
         var node = dom('div', {html: html});
         parent = byId(parent || options);
@@ -210,13 +208,76 @@
         return node.firstChild;
     }
 
-    function toFrag(html){
+    function fromDom (node) {
+        function getAttrs (node) {
+            var att, i, attrs = {};
+            for(i = 0; i < node.attributes.length; i++){
+                att = node.attributes[i];
+                attrs[att.localName] = normalize(att.value === '' ? true : att.value);
+            }
+            return attrs;
+        }
+        function getText (node) {
+            var i, t, text = '';
+            for(i = 0; i < node.childNodes.length; i++){
+                t = node.childNodes[i];
+                if(t.nodeType === 3 && t.textContent.trim()){
+                    text += t.textContent.trim();
+                }
+            }
+            return text;
+        }
+        var i, object = getAttrs(node);
+        object.text = getText(node);
+        object.children = [];
+        if(node.children.length){
+            for(i = 0; i < node.children.length; i++){
+                object.children.push(fromDom(node.children[i]));
+            }
+        }
+        return object;
+    }
+
+    function toFrag (html){
         var frag = document.createDocumentFragment();
         frag.innerHTML = html;
         return frag;
     }
 
-    function dom(nodeType, options, parent, prepend){
+    function addChildren (node, children) {
+        if(Array.isArray(children)){
+            for(var i = 0; i < children.length; i++){
+                node.appendChild(children[i]);
+            }
+        }
+        else{
+            node.appendChild(children);
+        }
+    }
+
+    function addContent (node, options) {
+        var html;
+        if(options.html !== undefined || options.innerHTML !== undefined){
+            html = options.html || options.innerHTML;
+            if(typeof html === 'object'){
+                addChildren(node, html);
+            }
+            else if(html.indexOf('<') === 0) {
+                node.innerHTML = html;
+            }
+            else{
+                node.appendChild(document.createTextNode(html));
+            }
+        }
+        if(options.text){
+            node.appendChild(document.createTextNode(options.text));
+        }
+        if(options.children){
+            addChildren(node, options.children);
+        }
+    }
+    
+    function dom (nodeType, options, parent, prepend){
         // create a node
         // if first argument is a string and starts with <, it is assumed
         // to use toDom, and creates a node from HTML. Optional second arg is
@@ -234,20 +295,17 @@
 
         options = options || {};
         var
-            className = options.css || options.className,
+            className = options.css || options.className || options.class,
             node = document.createElement(nodeType);
 
-        options.html = options.html === undefined ? options.innerHTML : options.html;
         parent = getNode(parent);
 
         if(className){
             node.className = className;
         }
-
-        if(options.html !== undefined){
-            node.innerHTML = options.html;
-        }
-
+        
+        addContent(node, options);
+        
         if(options.cssText){
             node.style.cssText = options.cssText;
         }
@@ -275,7 +333,7 @@
         return node;
     }
 
-    function destroy(node){
+    function destroy (node){
         // destroys a node completely
         //
         if(node) {
@@ -284,7 +342,7 @@
         }
     }
 
-    function clean(node, dispose){
+    function clean (node, dispose){
         //	Removes all child nodes
         //		dispose: destroy child nodes
         if(dispose){
@@ -349,29 +407,29 @@
     }
 
     dom.classList = {
-        remove: function(node, names){
+        remove: function (node, names){
             toArray(names).forEach(function(name){
                 node.classList.remove(name);
             });
         },
-        add: function(node, names){
+        add: function (node, names){
             toArray(names).forEach(function(name){
                 node.classList.add(name);
             });
         },
-        contains: function(node, names){
+        contains: function (node, names){
             return toArray(names).every(function (name) {
                 return node.classList.contains(name);
             });
         },
-        toggle: function(node, names, value){
+        toggle: function (node, names, value){
             toArray(names).forEach(function(name){
                 node.classList.toggle(name, value);
             });
         }
     };
 
-    function toArray(names){
+    function toArray (names){
         if(!names){
             console.error('dom.classList should include a node and a className');
             return [];
@@ -391,7 +449,7 @@
         };
     }
     
-    function normalize(val){
+    function normalize (val){
         if(val === 'false'){
             return false;
         }else if(val === 'true'){
@@ -416,6 +474,7 @@
     dom.isNode = isNode;
     dom.ancestor = ancestor;
     dom.toDom = toDom;
+    dom.fromDom = fromDom;
     dom.toFrag = toFrag;
 
     return dom;

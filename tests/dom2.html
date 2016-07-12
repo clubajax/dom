@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 5//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+    <title>Test dom</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mocha/2.5.3/mocha.css">
+    <script src="../src/dom.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mocha/2.5.3/mocha.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chai/3.5.0/chai.min.js"></script>
+    <style>
+        body{
+            font-family: sans-serif;
+            padding: 20px;
+        }
+        #option-div{
+            position: absolute;
+            left: -10000px;
+        }
+    </style>
+</head>
+<body>
+    <h1>dom test</h1>
+    <div id="option-div" class="foo" value="bar" selected="a" disabled="true" is-prop>
+        <option value="a">A</option>
+        <option value="b" selected>B</option>
+        <option value="c">C</option>
+    </div>
+
+    <div id="mocha"></div>
+    <script>
+
+        mocha.setup('tdd');
+
+
+        suite('dom', function() {
+            var
+                body = document.body,
+                expect = chai.expect,
+                dom = window.dom;
+
+            test('it should create a node with innerHTML', function () {
+                var node;
+
+                node = dom('div', {html: '<span>span</span>'});
+                expect(dom.queryAll(node, 'span').length).to.equal(1);
+                dom.destroy(node);
+
+                node = dom('div', {innerHTML: '<span>span</span>'});
+                expect(dom.queryAll(node, 'span').length).to.equal(1);
+                dom.destroy(node);
+            });
+
+            test('it should create a node with text', function () {
+                var node;
+
+                node = dom('div', {html: 'text'});
+                expect(node.textContent).to.equal('text');
+                dom.destroy(node);
+
+                node = dom('div', {text: 'text'});
+                expect(node.textContent).to.equal('text');
+                dom.destroy(node);
+            });
+
+            test('it should create a node with a child node', function () {
+                var node;
+
+                node = dom('div', {html: dom('span')});
+                expect(dom.queryAll(node, 'span').length).to.equal(1);
+                dom.destroy(node);
+            });
+
+            test('it should create a node with children', function () {
+                var node;
+
+                node = dom('div', {html: [dom('span'),dom('span'),dom('span')]});
+                expect(dom.queryAll(node, 'span').length).to.equal(3);
+                dom.destroy(node);
+            });
+
+            test('it should create an object from dom', function () {
+                var
+                    node = dom.byId('option-div'),
+                    o = dom.fromDom(node);
+
+                console.log('obj', o);
+                expect(typeof o).to.equal('object');
+                expect(o.id).to.equal('option-div');
+                expect(o.class).to.equal('foo');
+                expect(o.value).to.equal('bar');
+                expect(o.selected).to.equal('a');
+                expect(o.disabled).to.equal(true);
+                expect(o['is-prop']).to.equal(true);
+                expect(o.children.length).to.equal(3);
+
+                expect(o.children[0].value).to.equal('a');
+                expect(o.children[0].text).to.equal('A');
+                expect(o.children[0].selected).to.equal(undefined);
+
+                expect(o.children[1].value).to.equal('b');
+                expect(o.children[1].text).to.equal('B');
+                expect(o.children[1].selected).to.equal(true);
+
+                expect(o.children[2].value).to.equal('c');
+                expect(o.children[2].text).to.equal('C');
+                expect(o.children[2].selected).to.equal(undefined);
+
+            });
+
+        });
+
+        mocha.run();
+    </script>
+</body>
+</html>

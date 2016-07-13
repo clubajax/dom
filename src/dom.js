@@ -17,6 +17,7 @@
     //
     var
         isDimension = {
+            opacity: 1,
             width:1,
             height:1,
             top:1,

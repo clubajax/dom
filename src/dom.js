@@ -16,8 +16,12 @@
     //          get a unique ID (not dom specific)
     //
     var
-        isDimension = {
+        isFloat = {
             opacity: 1,
+            zIndex: 1,
+            'z-index': 1
+        },
+        isDimension = {
             width:1,
             height:1,
             top:1,
@@ -100,6 +104,9 @@
         if(node.style[prop]){
             if(isDimension[prop]){
                 return parseInt(node.style[prop], 10);
+            }
+            if(isFloat[prop]){
+                return parseFloat(node.style[prop]);
             }
             return node.style[prop];
         }

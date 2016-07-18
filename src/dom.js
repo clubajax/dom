@@ -270,13 +270,16 @@
             if(typeof html === 'object'){
                 addChildren(node, html);
             }
+
+            node.innerHTML = html;
+            
             // misses some HTML, such as entities (&npsp;)
             //else if(html.indexOf('<') === 0) {
             //    node.innerHTML = html;
             //}
-            else{
-                node.appendChild(document.createTextNode(html));
-            }
+            //else{
+            //    node.appendChild(document.createTextNode(html));
+            //}
         }
         if(options.text){
             node.appendChild(document.createTextNode(options.text));

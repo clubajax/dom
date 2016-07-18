@@ -236,7 +236,7 @@
         }
 
         if(options.html || options.innerHTML){
-            node.innerHTML = options.html || options.innerHTML;
+            node.innerHTML = options.html || options.innerHTML || '';
         }
 
         if(options.cssText){

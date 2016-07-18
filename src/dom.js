@@ -266,7 +266,7 @@
     function addContent (node, options) {
         var html;
         if(options.html !== undefined || options.innerHTML !== undefined){
-            html = options.html || options.innerHTML;
+            html = options.html || options.innerHTML || '';
             if(typeof html === 'object'){
                 addChildren(node, html);
             }

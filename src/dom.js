@@ -435,9 +435,24 @@
             });
         },
         toggle: function (node, names, value){
-            toArray(names).forEach(function(name){
-                node.classList.toggle(name, value);
-            });
+            names = toArray(names);
+            if(typeof value === 'undefined') {
+                // use standard functionality, supported by IE
+                names.forEach(function (name) {
+                    node.classList.toggle(name, value);
+                });
+            }
+            // IE11 does not support the second parameter  
+            else if(value){
+                names.forEach(function (name) {
+                    node.classList.add(name);
+                });
+            }
+            else{
+                names.forEach(function (name) {
+                    node.classList.remove(name);
+                });
+            }
         }
     };
 

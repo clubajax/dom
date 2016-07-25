@@ -16,6 +16,11 @@
     //          get a unique ID (not dom specific)
     //
     var
+        isFloat = {
+            opacity: 1,
+            zIndex: 1,
+            'z-index': 1
+        },
         isDimension = {
             width:1,
             height:1,
@@ -99,6 +104,9 @@
         if(node.style[prop]){
             if(isDimension[prop]){
                 return parseInt(node.style[prop], 10);
+            }
+            if(isFloat[prop]){
+                return parseFloat(node.style[prop]);
             }
             return node.style[prop];
         }
@@ -258,16 +266,20 @@
     function addContent (node, options) {
         var html;
         if(options.html !== undefined || options.innerHTML !== undefined){
-            html = options.html || options.innerHTML;
+            html = options.html || options.innerHTML || '';
             if(typeof html === 'object'){
                 addChildren(node, html);
-            }
-            else if(html.indexOf('<') === 0) {
+            }else{
                 node.innerHTML = html;
             }
-            else{
-                node.appendChild(document.createTextNode(html));
-            }
+
+            // misses some HTML, such as entities (&npsp;)
+            //else if(html.indexOf('<') === 0) {
+            //    node.innerHTML = html;
+            //}
+            //else{
+            //    node.appendChild(document.createTextNode(html));
+            //}
         }
         if(options.text){
             node.appendChild(document.createTextNode(options.text));
@@ -423,9 +435,24 @@
             });
         },
         toggle: function (node, names, value){
-            toArray(names).forEach(function(name){
-                node.classList.toggle(name, value);
-            });
+            names = toArray(names);
+            if(typeof value === 'undefined') {
+                // use standard functionality, supported by IE
+                names.forEach(function (name) {
+                    node.classList.toggle(name, value);
+                });
+            }
+            // IE11 does not support the second parameter  
+            else if(value){
+                names.forEach(function (name) {
+                    node.classList.add(name);
+                });
+            }
+            else{
+                names.forEach(function (name) {
+                    node.classList.remove(name);
+                });
+            }
         }
     };
 

@@ -269,10 +269,10 @@
             html = options.html || options.innerHTML || '';
             if(typeof html === 'object'){
                 addChildren(node, html);
+            }else{
+                node.innerHTML = html;
             }
 
-            node.innerHTML = html;
-            
             // misses some HTML, such as entities (&npsp;)
             //else if(html.indexOf('<') === 0) {
             //    node.innerHTML = html;

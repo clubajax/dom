@@ -151,32 +151,27 @@
 
     function box (node){
         if(node === window){
-            return {
-                width: node.innerWidth,
-                height: node.innerHeight
-            };
+            node = document.documentElement;
         }
         // node dimensions
         // returned object is immutable
         // add scroll positioning and convenience abbreviations
         var
-            dimensions = getNode(node).getBoundingClientRect(),
-            box = {
-                top: dimensions.top,
-                right: dimensions.right,
-                bottom: dimensions.bottom,
-                left: dimensions.left,
-                height: dimensions.height,
-                h: dimensions.height,
-                width: dimensions.width,
-                w: dimensions.width,
-                scrollY: window.scrollY,
-                scrollX: window.scrollX,
-                x: dimensions.left + window.pageXOffset,
-                y: dimensions.top + window.pageYOffset
-            };
-
-        return box;
+            dimensions = getNode(node).getBoundingClientRect();
+        return {
+            top: dimensions.top,
+            right: dimensions.right,
+            bottom: dimensions.bottom,
+            left: dimensions.left,
+            height: dimensions.height,
+            h: dimensions.height,
+            width: dimensions.width,
+            w: dimensions.width,
+            scrollY: window.scrollY,
+            scrollX: window.scrollX,
+            x: dimensions.left + window.pageXOffset,
+            y: dimensions.top + window.pageYOffset
+        };
     }
 
     function query (node, selector){

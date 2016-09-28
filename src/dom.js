@@ -241,12 +241,6 @@
         return object;
     }
 
-    function toFrag (html){
-        var frag = document.createDocumentFragment();
-        frag.innerHTML = html;
-        return frag;
-    }
-
     function addChildren (node, children) {
         if(Array.isArray(children)){
             for(var i = 0; i < children.length; i++){
@@ -497,7 +491,6 @@
     dom.ancestor = ancestor;
     dom.toDom = toDom;
     dom.fromDom = fromDom;
-    dom.toFrag = toFrag;
-
+    
     return dom;
 }));

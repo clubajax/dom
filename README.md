@@ -144,11 +144,18 @@ Bonus: if it is detected to be a jQuery $element, it "de-jQuery-ifies" it, and r
 Returns the dimensions of the passed node. Mainly an alias for `getBoundingClientRect()`. If the
 passed item in the window object, returns its width and height.
 
-**dom.query('div.myClass')**
+**dom.query([?node], 'div.myClass')**
 
-An alias for `document.querySelectorAll`, so the parameter should conform to that. If the result is
-one node, returns a node. If the result is multiple nodes, they are returned as an Array and not a
+An alias for `document.querySelector`, so the parameter should conform to that.
+
+**dom.queryAll([?node]'div.myClass')**
+
+An alias for `document.querySelectorAll`, so the parameter should conform to that. Returns an Array, not a
 NodeList.
+
+**dom.insertAfter(refNode, node)**
+
+Inserts a node after the reference sibling.
 
 **dom.destroy(node)**
 
@@ -158,15 +165,6 @@ Destroys a node completely.
 
 Removes (but does not destroy) all child nodes.
 
-**dom.show(node)** and **dom.hide(node)**
-
-These methods simply add or remove the className "off". So by itself it will do little else. Your CSS
-should ad a ".off" class that has `display:none`.
-
-This techinque is more effective than setting `style:display:none`, because it is too difficult to
-reverse. It is not easily known if the node has `display:block` or `display:inline-block` or a table style.
-
-
 **dom.classList**
 
 `dom.classList` is essentially a passthrough for node.classList methods, `add`, `remove`, `toggle`, and
@@ -175,6 +173,7 @@ reverse. It is not easily known if the node has `display:block` or `display:inli
 There is extended functionality in `add` and `remove`: standard functionality doesn't allow for Arrays or
 strings with spaces (ergo, two classes at once). `dom.classList` allows for this.
 
+`toggle` works around an IE bug.
 
 ## Comes with Stub Included!
 
@@ -191,27 +190,4 @@ It is recommended that the stub/dom.js should be looked over to learn of its ful
 
 ## License
 
-This is free and unencumbered software released into the public domain.
-
-Anyone is free to copy, modify, publish, use, compile, sell, or
-distribute this software, either in source code form or as a compiled
-binary, for any purpose, commercial or non-commercial, and by any
-means.
-
-In jurisdictions that recognize copyright laws, the author or authors
-of this software dedicate any and all copyright interest in the
-software to the public domain. We make this dedication for the benefit
-of the public at large and to the detriment of our heirs and
-successors. We intend this dedication to be an overt act of
-relinquishment in perpetuity of all present and future rights to this
-software under copyright law.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
-OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-OTHER DEALINGS IN THE SOFTWARE.
-
-For more information, please refer to <http://unlicense.org/>
+This uses the [MIT license](./LICENSE). Feel free to use, and redistribute at will.

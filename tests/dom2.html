@@ -25,17 +25,24 @@
         <option value="c">C</option>
     </div>
 
+    <div id="children-with-whitespace">
+        <span>a</span>
+        <span>c</span>
+        <span>d</span>
+    </div>
+
     <div id="mocha"></div>
     <script>
 
         mocha.setup('tdd');
 
+        var
+            body = document.body,
+            expect = chai.expect,
+            dom = window.dom;
 
         suite('dom', function() {
-            var
-                body = document.body,
-                expect = chai.expect,
-                dom = window.dom;
+
 
             test('it should create a node with innerHTML', function () {
                 var node;
@@ -115,6 +122,55 @@
                 dom.classList.toggle(node, 'foo', false);
                 expect(node.className).to.equal('');
             });
+
+            test('it should insertAfter, between nodes', function () {
+
+                var
+                    parent = dom('div', {}, document.body),
+                    sibling = dom('span', {html: 'a'}, parent),
+                    end = dom('span', {html: 'c'}, parent),
+                    insertNode = dom('span', {html:'b'});
+
+                dom.insertAfter(sibling, insertNode);
+
+                expect(parent.textContent).to.equal('abc');
+                dom.destroy(parent);
+            });
+            test('it should insertAfter, at the end', function () {
+
+                var
+                    parent = dom('div', {}, document.body),
+                    sibling = dom('span', {html: 'a'}, parent),
+                    end = dom('span', {html: 'b'}, parent),
+                    insertNode = dom('span', {html:'c'});
+
+                dom.insertAfter(end, insertNode);
+
+                expect(parent.textContent).to.equal('abc');
+                dom.destroy(parent);
+            });
+
+
+
+            test('it should insertAfter, ignoring whitespace', function () {
+
+                var
+                    txt,
+                    parent = dom.byId('children-with-whitespace'),
+                    sibling = dom.query('span'),
+                    insertNode = dom('span', {html:'b'});
+
+                dom.insertAfter(sibling, insertNode);
+
+                txt = parent.textContent.trim().replace(/\s/g, '');
+                expect(txt).to.equal('abcd');
+                dom.destroy(parent);
+            });
+
+        });
+
+        suite('temp', function () {
+
 
         });
 

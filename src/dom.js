@@ -334,6 +334,27 @@
         return node;
     }
 
+    function getNextSibling (node) {
+        var sibling = node;
+        while(sibling){
+            sibling = sibling.nextSibling;
+            if(sibling && sibling.nodeType === 1){
+                return sibling;
+            }
+        }
+        return null;
+    }
+
+    function insertAfter (refNode, node) {
+        var sibling = getNextSibling(refNode);
+        if(!sibling){
+            refNode.parentNode.appendChild(node);
+        }else{
+            refNode.parentNode.insertBefore(node, sibling);
+        }
+        return sibling;
+    }
+
     function destroy (node){
         // destroys a node completely
         //
@@ -491,6 +512,8 @@
     dom.ancestor = ancestor;
     dom.toDom = toDom;
     dom.fromDom = fromDom;
-    
+    dom.insertAfter = insertAfter;
+    dom.getNextSibling = getNextSibling;
+
     return dom;
 }));

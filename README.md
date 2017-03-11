@@ -37,12 +37,16 @@ or a standard browser global.
 `dom` is the main function, and has several more functions attached to that function. So you can
 create a node with the main function like:
 
-	dom('div');
+```javascript
+dom('div');
+```
 	
 And you could access nodes with the `byId` attached function, like:
 
-	var node - dom.byId('my-node');
-	
+```javascript
+var node = dom.byId('my-node');
+```
+
 ## API
 
 **dom()**
@@ -52,14 +56,15 @@ Creates and returns a node.
 
 if the first argument is a string and starts with '<', it is assumed to use be an HTML string, and
 creates a node using innerHTML. Optional second arg is a parentNode.
+```javascript
+var node = dom('<div>my dome node</div>', parentNode);
+```
 
-	var node = dom('<div>my dome node</div>', parentNode);
-	
 if the first argument is a string and does *not* start with '<', it is assumed to be a nodeName,
 and a node is created via `document.createElement()`.
-
-	var node = dom('div');
-	
+```javascript
+var node = dom('div');
+```
 Additional parameters (all optional):
 
 The second parameter is `options` which is an object that can contain properties or other objects:
@@ -76,7 +81,6 @@ The third parameter is an node or a node id, where the newly created node will b
 
 The fourth parameter is a boolean. If true, the newly created node will be prepended, not appended.
 	
-
 **dom.style()**
         
 `dom.style` is a getter or a setter, depending on the parameters passed.
@@ -86,9 +90,9 @@ accessed at a time). If the result is in the node.style object, that is returned
 property is acquired through the window global `getComputedStyle`.
 
 To use as a setter, add a third parameter as a value:
-
-	dom.style(node, 'width', 100);
-
+```javascript
+dom.style(node, 'width', 100);
+```
 Note that like jQuery, the value did not need to be a string appended with 'px'. If the style is a
 dimensional property, this is done automatically. The dimensional properties are:
 
@@ -104,34 +108,53 @@ dimensional property, this is done automatically. The dimensional properties are
 	max-height
 
 A more common way to use as a setter is to make the second parameter an object:
-
-	dom.style(node, {
-		width: 100,
-		height: 100,
-		position: 'absolute',
-		zIndex: 1
-	});
-
+```javascript
+dom.style(node, {
+    width: 100,
+    height: 100,
+    position: 'absolute',
+    zIndex: 1
+});
+```
 **dom.attr()**
 
 Similar to `dom.style`, `dom.attr` is a getter/setter to get and set attributes on nodes.
 
 As a getter:
 
-	var dataItem = dom.attr(node, 'data-item');
-	
+```javascript
+var dataItem = dom.attr(node, 'data-item');
+```
+
 As a setter:
 
-	dom.attr(node, 'data-item', dataItem);
-	
-Or multiple attributes:
+```javascript
+dom.attr(node, 'data-item', dataItem);
+```
 
-	dom.attr(node, {
-		'data-item': dataItem
-		scrollTop: 100,
-		contentEditable: true
-	});
-		
+Or multiple attributes:
+```javascript
+dom.attr(node, {
+    'data-item': dataItem
+    scrollTop: 100,
+    contentEditable: true
+});
+```
+
+Complex objects can be passed while creating custom-element nodes, via `attr` as a convenience:
+```javascript
+dom('my-custom', {
+	attr:{
+		myObject:{
+			a:1,
+			bool:tru
+		}
+	}
+});
+```
+
+You could also use dom.attr() to pass a node, but that wouldn't make much sense.
+
 **dom.byId('nodeId')**
 
 If the parameter is a string, it finds a node with document.getElementByid(). If not found, returns

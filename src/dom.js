@@ -139,8 +139,10 @@
             return null;
         }
         else if(value !== undefined){
-            if(prop === 'text' || prop === 'html' || prop === 'innerHTML'){
-                node.innerHTML = value;
+            if(prop === 'text' || prop === 'html' || prop === 'innerHTML') {
+				node.innerHTML = value;
+			}else if(typeof value === 'object'){
+				node[prop] = value;
             }else{
                 node.setAttribute(prop, value);
             }

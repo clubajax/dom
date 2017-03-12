@@ -491,7 +491,11 @@
     function normalize (val){
         if(val === 'false'){
             return false;
-        }else if(val === 'true'){
+        }
+        else if(val === 'null'){
+			return null;
+		}
+        else if(val === 'true'){
             return true;
         }
         if(!isNaN(parseFloat(val))){

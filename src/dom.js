@@ -94,9 +94,6 @@
     }
 
     function attr (node, prop, value){
-        // get/set node attribute(s)
-        //      prop: string or object
-        //
         var key;
         if(typeof prop === 'object'){
             for(key in prop){
@@ -180,7 +177,6 @@
     }
 
     function toDom (html, options, parent){
-        // create a node from an HTML string
         var node = dom('div', {html: html});
         parent = byId(parent || options);
         if(parent){
@@ -284,16 +280,14 @@
         return node;
     }
 
-    function getNextSibling (node) {
-        var sibling = node;
-        while(sibling){
-            sibling = sibling.nextSibling;
-            if(sibling && sibling.nodeType === 1){
-                return sibling;
-            }
-        }
-        return null;
+    function nextSibling (node) {
+        return node.nextElementSibling;
     }
+
+	function previousSibling (node) {
+		return node.previousElementSibling;
+	}
+
 
     function insertAfter (refNode, node) {
         var sibling = getNextSibling(refNode);
@@ -425,16 +419,6 @@
             return name.trim();
         });
     }
-
-    if (!window.requestAnimationFrame) {
-        dom.requestAnimationFrame = function(callback){
-            setTimeout(callback, 0);
-        };
-    }else{
-        dom.requestAnimationFrame = function(cb){
-            window.requestAnimationFrame(cb);
-        };
-    }
     
     function normalize (val){
         if(val === 'false'){
@@ -467,7 +451,8 @@
     dom.toDom = toDom;
     dom.fromDom = fromDom;
     dom.insertAfter = insertAfter;
-    dom.getNextSibling = getNextSibling;
+	dom.nextSibling = nextSibling;
+    dom.previousSibling = previousSibling;
 
     return dom;
 }));

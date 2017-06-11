@@ -280,17 +280,8 @@
         return node;
     }
 
-    function nextSibling (node) {
-        return node.nextElementSibling;
-    }
-
-	function previousSibling (node) {
-		return node.previousElementSibling;
-	}
-
-
     function insertAfter (refNode, node) {
-        var sibling = getNextSibling(refNode);
+        var sibling = refNode.nextElementSibling;
         if(!sibling){
             refNode.parentNode.appendChild(node);
         }else{
@@ -451,8 +442,6 @@
     dom.toDom = toDom;
     dom.fromDom = fromDom;
     dom.insertAfter = insertAfter;
-	dom.nextSibling = nextSibling;
-    dom.previousSibling = previousSibling;
 
     return dom;
 }));

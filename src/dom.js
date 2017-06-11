@@ -1,20 +1,7 @@
 /* UMD.define */ (function (root, factory) {
     if (typeof customLoader === 'function'){ customLoader(factory, 'dom'); }else if (typeof define === 'function' && define.amd) { define([], factory); } else if (typeof exports === 'object') { module.exports = factory(); } else { root.returnExports = factory(); window.dom = factory(); }
 }(this, function () {
-    //  convenience library for common DOM methods
-    //      dom()
-    //          create dom nodes
-    //      dom.style()
-    //          set/get node style
-    //      dom.attr()
-    //          set/get attributes
-    //      dom.destroy()
-    //          obliterates a node
-    //      dom.box()
-    //          get node dimensions
-    //      dom.uid()
-    //          get a unique ID (not dom specific)
-    //
+
     var
         isFloat = {
             opacity: 1,
@@ -53,15 +40,10 @@
     }
 
     function getNode (item){
-
-        if(!item){ return item; }
         if(typeof item === 'string'){
             return document.getElementById(item);
         }
-        // de-jqueryify
-        return item.get ? item.get(0) :
-            // item is a dom node
-            item;
+        return item;
     }
 
     function byId (id){
@@ -69,9 +51,6 @@
     }
 
     function style (node, prop, value){
-        // get/set node style(s)
-        //      prop: string or object
-        //
         var key, computed;
         if(typeof prop === 'object'){
             // object setter
@@ -87,17 +66,6 @@
                 value += 'px';
             }
             node.style[prop] = value;
-
-            if(prop === 'userSelect'){
-                value = !!value ? 'text' : 'none';
-                style(node, {
-                    webkitTouchCallout: value,
-                    webkitUserSelect: value,
-                    khtmlUserSelect: value,
-                    mozUserSelect: value,
-                    msUserSelect: value
-                });
-            }
         }
 
         // getter, if a simple style
@@ -140,10 +108,24 @@
         }
         else if(value !== undefined){
             if(prop === 'text' || prop === 'html' || prop === 'innerHTML') {
-				node.innerHTML = value;
-			}else if(typeof value === 'object'){
+            	// ignore, handled during creation
+				return;
+			}
+			else if(prop === 'className' || prop === 'class') {
+				node.className = value;
+			}
+			else if(prop === 'style') {
+				style(node, value);
+			}
+			else if(prop === 'attr') {
+            	// back compat
+				attr(node, value);
+			}
+			else if(typeof value === 'object'){
+            	// object, like 'data'
 				node[prop] = value;
-            }else{
+            }
+            else{
                 node.setAttribute(prop, value);
             }
         }
@@ -261,16 +243,10 @@
             if(typeof html === 'object'){
                 addChildren(node, html);
             }else{
+            	// careful assuming textContent -
+				// misses some HTML, such as entities (&npsp;)
                 node.innerHTML = html;
             }
-
-            // misses some HTML, such as entities (&npsp;)
-            //else if(html.indexOf('<') === 0) {
-            //    node.innerHTML = html;
-            //}
-            //else{
-            //    node.appendChild(document.createTextNode(html));
-            //}
         }
         if(options.text){
             node.appendChild(document.createTextNode(options.text));
@@ -281,49 +257,21 @@
     }
     
     function dom (nodeType, options, parent, prepend){
-        // create a node
-        // if first argument is a string and starts with <, it is assumed
-        // to use toDom, and creates a node from HTML. Optional second arg is
-        // parent to append to
-        // else:
-        //      nodeType: string, type of node to create
-        //      options: object with style, className, or attr properties
-        //          (can also be objects)
-        //      parent: Node, optional node to append to
-        //      prepend: truthy, to append node as the first child
-        //
+        // if first argument is a string and starts with <, pass to toDom()
         if(nodeType.indexOf('<') === 0){
             return toDom(nodeType, options, parent);
         }
 
         options = options || {};
         var
-            className = options.css || options.className || options.class,
             node = document.createElement(nodeType);
 
         parent = getNode(parent);
 
-        if(className){
-            node.className = className;
-        }
-        
+
         addContent(node, options);
-        
-        if(options.cssText){
-            node.style.cssText = options.cssText;
-        }
 
-        if(options.id){
-            node.id = options.id;
-        }
-
-        if(options.style){
-            style(node, options.style);
-        }
-
-        if(options.attr){
-            attr(node, options.attr);
-        }
+		attr(node, options);
 
         if(parent && isNode(parent)){
             if(prepend && parent.hasChildNodes()){

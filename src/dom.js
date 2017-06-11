@@ -253,17 +253,16 @@
     }
     
     function dom (nodeType, options, parent, prepend){
-        // if first argument is a string and starts with <, pass to toDom()
+		options = options || {};
+
+		// if first argument is a string and starts with <, pass to toDom()
         if(nodeType.indexOf('<') === 0){
             return toDom(nodeType, options, parent);
         }
 
-        options = options || {};
-        var
-            node = document.createElement(nodeType);
+        var node = document.createElement(nodeType);
 
         parent = getNode(parent);
-
 
         addContent(node, options);
 
@@ -313,57 +312,9 @@
         }
     }
 
-    function ancestor (node, selector){
-        // TODO: replace this with 'closest' and 'matches'
-        // gets the ancestor of node based on selector criteria
-        // useful for getting the target node when a child node is clicked upon
-        //
-        // USAGE
-        //      on.selector(childNode, '.app.active');
-        //      on.selector(childNode, '#thinger');
-        //      on.selector(childNode, 'div');
-        //	DOES NOT SUPPORT:
-        //		combinations of above
-        var
-            test,
-            parent = node;
-
-        if(selector.indexOf('.') === 0){
-            // className
-            selector = selector.replace('.', ' ').trim();
-            test = function(n){
-                return n.classList.contains(selector);
-            };
-        }
-        else if(selector.indexOf('#') === 0){
-            // node id
-            selector = selector.replace('#', '').trim();
-            test = function(n){
-                return n.id === selector;
-            };
-        }
-        else if(selector.indexOf('[') > -1){
-            // attribute
-            console.error('attribute selectors are not yet supported');
-        }
-        else{
-            // assuming node name
-            selector = selector.toUpperCase();
-            test = function(n){
-                return n.nodeName === selector;
-            };
-        }
-
-        while(parent){
-            if(parent === document.body || parent === document){ return false; }
-            if(test(parent)){ break; }
-            parent = parent.parentNode;
-        }
-
-        return parent;
-    }
-
     dom.classList = {
+    	// in addition to fixing IE11 toggle
+		// these methods also handle arrays
         remove: function (node, names){
             toArray(names).forEach(function(name){
                 node.classList.remove(name);
@@ -438,7 +389,6 @@
     dom.destroy = destroy;
     dom.uid = uid;
     dom.isNode = isNode;
-    dom.ancestor = ancestor;
     dom.toDom = toDom;
     dom.fromDom = fromDom;
     dom.insertAfter = insertAfter;

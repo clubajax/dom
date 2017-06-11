@@ -9,13 +9,17 @@ dom uses UMD, so it will work with globals, AMD, or Node-style module exports.
 To install using bower:
 
 	bower install clubajax/dom --save
+	
+Or npm:
 
-You may also use `npm` if you prefer. Or, you can clone the repository with your generic clone commands as a standalone 
+    npm install clubajax/dom --save
+    
+You can clone the repository with your generic clone commands as a standalone 
 repository or submodule.
 
 	git clone git://github.com/clubajax/dom.git
 
-It is recommended that you set the config.path of RequireJS to make `dom` accessible as an
+With AMD, it is recommended that you set the config.path of RequireJS to make `dom` accessible as an
 absolute path.
 	
 `dom` has no dependencies.
@@ -37,13 +41,13 @@ or a standard browser global.
 `dom` is the main function, and has several more functions attached to that function. So you can
 create a node with the main function like:
 
-```javascript
+```jsx harmony
 dom('div');
 ```
 	
 And you could access nodes with the `byId` attached function, like:
 
-```javascript
+```jsx harmony
 var node = dom.byId('my-node');
 ```
 
@@ -60,27 +64,63 @@ creates a node using innerHTML. Optional second arg is a parentNode.
 var node = dom('<div>my dome node</div>', parentNode);
 ```
 
+The previous can be more explicitly done by using `dom.toDom()`
+
 if the first argument is a string and does *not* start with '<', it is assumed to be a nodeName,
 and a node is created via `document.createElement()`.
-```javascript
+```jsx harmony
 var node = dom('div');
 ```
 Additional parameters (all optional):
 
 The second parameter is `options` which is an object that can contain properties or other objects:
 
-	id: sets the node ID
-	className: Sets the node class
-	css: Sets the node class (alias for className)
-	innerHTML: Sets the node's innerHTML
-	html: Sets the node's innerHTML (alias for innerHTML)
-	style: An object of CSS key-value styles. This object is passed to dom.style()
-	attr: An object of attribute key-value pairs. This object is passed to dom.attr()
-
+* `id`: sets the node ID
+* `class` or `className`: Sets the node class
+* `html` or `innerHTML`: Sets the content of the node, Possible values:
+  * string: will be added as innerHTML
+  * object (HtmlElement): Will be be added via appendChild
+  * array: HtmlElements will be appended and strings will be converted into dom nodes and appended
+* `style`: An object of CSS key-value styles. This object is passed to dom.style()
+* All other keys are expected to be attributes.
+  * (The `attr` object has been deprecated from 1.x)
+	
 The third parameter is an node or a node id, where the newly created node will be appended
 
 The fourth parameter is a boolean. If true, the newly created node will be prepended, not appended.
 	
+The `html` can accept 
+
+**dom.fromDom()**
+Converts a dom node and its children into a JavaScript object. Example:
+```html
+<div id="option-div" class="foo" value="bar" selected="a" disabled="true" is-prop="">
+    <option value="a">A</option>
+    <option value="b" selected="">B</option>
+    <option value="c">C</option>
+</div>
+```
+```jsx harmony
+result = {
+    children:[{
+        text: 'A',
+           value: 'a'
+    },{
+        text: 'A',
+        value: 'b'
+    },{
+        text: 'C',
+        value: 'c'
+    }],
+    class:"foo",
+    disabled:true,
+    id:"option-div",
+    'is-prop':true,
+    selected:"a",
+    text:"",
+    value:"bar"
+}
+```
 **dom.style()**
         
 `dom.style` is a getter or a setter, depending on the parameters passed.
@@ -90,7 +130,7 @@ accessed at a time). If the result is in the node.style object, that is returned
 property is acquired through the window global `getComputedStyle`.
 
 To use as a setter, add a third parameter as a value:
-```javascript
+```jsx harmony
 dom.style(node, 'width', 100);
 ```
 Note that like jQuery, the value did not need to be a string appended with 'px'. If the style is a
@@ -108,10 +148,11 @@ dimensional property, this is done automatically. The dimensional properties are
 	max-height
 
 A more common way to use as a setter is to make the second parameter an object:
-```javascript
+```jsx harmony
 dom.style(node, {
     width: 100,
-    height: 100,
+    height: '10em',
+    top: '50%',
     position: 'absolute',
     zIndex: 1
 });
@@ -122,18 +163,18 @@ Similar to `dom.style`, `dom.attr` is a getter/setter to get and set attributes 
 
 As a getter:
 
-```javascript
+```jsx harmony
 var dataItem = dom.attr(node, 'data-item');
 ```
 
 As a setter:
 
-```javascript
+```jsx harmony
 dom.attr(node, 'data-item', dataItem);
 ```
 
 Or multiple attributes:
-```javascript
+```jsx harmony
 dom.attr(node, {
     'data-item': dataItem
     scrollTop: 100,
@@ -142,14 +183,12 @@ dom.attr(node, {
 ```
 
 Complex objects can be passed while creating custom-element nodes, via `attr` as a convenience:
-```javascript
+```jsx harmony
 dom('my-custom', {
-	attr:{
-		myObject:{
-			a:1,
-			bool:tru
-		}
-	}
+    myObject:{
+        a:1,
+        bool:tru
+    }
 });
 ```
 
@@ -197,6 +236,22 @@ There is extended functionality in `add` and `remove`: standard functionality do
 strings with spaces (ergo, two classes at once). `dom.classList` allows for this.
 
 `toggle` works around an IE bug.
+
+Examples:
+```jsx harmony
+dom.classList.toggle(node, 'selected', !!this.isSelected);
+dom.classList.add(node, 'foo bar baz');
+dom.classList.remove(node, 'foo baz');
+```
+
+**dom.normalize()**
+
+Returns a normalized value from the passed string. Conversions look like:
+
+    'true' => true
+    'false' => false
+    'null' => null
+    '1.5' => 1.5
 
 ## Comes with Stub Included!
 

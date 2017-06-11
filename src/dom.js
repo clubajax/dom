@@ -224,7 +224,11 @@
     function addChildren (node, children) {
         if(Array.isArray(children)){
             for(var i = 0; i < children.length; i++){
-                node.appendChild(children[i]);
+            	if(typeof children[i] === 'string'){
+					node.appendChild(toDom(children[i]));
+				}else {
+					node.appendChild(children[i]);
+				}
             }
         }
         else{

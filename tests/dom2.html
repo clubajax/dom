@@ -117,11 +117,20 @@
 					dom.destroy(node);
 				});
 
+				test('it should create a node with children using mixed values', function () {
+					var node;
+
+					node = dom('div', { html: [dom('span'), '<span></span>'] });
+					expect(dom.queryAll(node, 'span').length).to.equal(2);
+					dom.destroy(node);
+				});
+
 				test('it should create an object from dom', function () {
 					var
 						node = dom.byId('option-div'),
 						o = dom.fromDom(node);
-
+					console.log('', node);
+					console.log('', o);
 					expect(typeof o).to.equal('object');
 					expect(o.id).to.equal('option-div');
 					expect(o.class).to.equal('foo');

@@ -49,7 +49,8 @@
 
     function isNode (item){
         // safer test for custom elements in FF (with wc shim)
-        return !!item && typeof item === 'object' && typeof item.innerHTML === 'string';
+	    // fragment is a special case
+        return !!item && typeof item === 'object' && (typeof item.innerHTML === 'string' || item.nodeName === '#document-fragment');
     }
 
     function getNode (item){

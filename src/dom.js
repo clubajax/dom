@@ -377,7 +377,7 @@
 			else if(val === 'true'){
 				return true;
 			}
-			if (val.indexOf('/') > -1 || val.match(/-/g).length > 1) {
+			if (val.indexOf('/') > -1 || (val.match(/-/g) || []).length > 1) {
 				// type of date
 				return val;
 			}

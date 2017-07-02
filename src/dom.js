@@ -367,15 +367,21 @@
     }
     
     function normalize (val){
-        if(val === 'false'){
-            return false;
-        }
-        else if(val === 'null'){
-			return null;
+        if(typeof val === 'string') {
+			if(val === 'false'){
+				return false;
+			}
+			else if(val === 'null'){
+				return null;
+			}
+			else if(val === 'true'){
+				return true;
+			}
+			if (val.indexOf('/') > -1 || val.match(/-/g).length > 1) {
+				// type of date
+				return val;
+			}
 		}
-        else if(val === 'true'){
-            return true;
-        }
         if(!isNaN(parseFloat(val))){
             return parseFloat(val);
         }

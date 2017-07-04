@@ -1,20 +1,7 @@
 /* UMD.define */ (function (root, factory) {
     if (typeof customLoader === 'function'){ customLoader(factory, 'dom'); }else if (typeof define === 'function' && define.amd) { define([], factory); } else if (typeof exports === 'object') { module.exports = factory(); } else { root.returnExports = factory(); window.dom = factory(); }
 }(this, function () {
-    //  convenience library for common DOM methods
-    //      dom()
-    //          create dom nodes
-    //      dom.style()
-    //          set/get node style
-    //      dom.attr()
-    //          set/get attributes
-    //      dom.destroy()
-    //          obliterates a node
-    //      dom.box()
-    //          get node dimensions
-    //      dom.uid()
-    //          get a unique ID (not dom specific)
-    //
+
     var
         isFloat = {
             opacity: 1,
@@ -54,15 +41,10 @@
     }
 
     function getNode (item){
-
-        if(!item){ return item; }
         if(typeof item === 'string'){
             return document.getElementById(item);
         }
-        // de-jqueryify
-        return item.get ? item.get(0) :
-            // item is a dom node
-            item;
+        return item;
     }
 
     function byId (id){
@@ -70,9 +52,6 @@
     }
 
     function style (node, prop, value){
-        // get/set node style(s)
-        //      prop: string or object
-        //
         var key, computed;
         if(typeof prop === 'object'){
             // object setter
@@ -88,17 +67,6 @@
                 value += 'px';
             }
             node.style[prop] = value;
-
-            if(prop === 'userSelect'){
-                value = !!value ? 'text' : 'none';
-                style(node, {
-                    webkitTouchCallout: value,
-                    webkitUserSelect: value,
-                    khtmlUserSelect: value,
-                    mozUserSelect: value,
-                    msUserSelect: value
-                });
-            }
         }
 
         // getter, if a simple style
@@ -127,9 +95,6 @@
     }
 
     function attr (node, prop, value){
-        // get/set node attribute(s)
-        //      prop: string or object
-        //
         var key;
         if(typeof prop === 'object'){
             for(key in prop){
@@ -141,10 +106,24 @@
         }
         else if(value !== undefined){
             if(prop === 'text' || prop === 'html' || prop === 'innerHTML') {
-				node.innerHTML = value;
-			}else if(typeof value === 'object'){
+            	// ignore, handled during creation
+				return;
+			}
+			else if(prop === 'className' || prop === 'class') {
+				node.className = value;
+			}
+			else if(prop === 'style') {
+				style(node, value);
+			}
+			else if(prop === 'attr') {
+            	// back compat
+				attr(node, value);
+			}
+			else if(typeof value === 'object'){
+            	// object, like 'data'
 				node[prop] = value;
-            }else{
+            }
+            else{
                 node.setAttribute(prop, value);
             }
         }
@@ -199,7 +178,6 @@
     }
 
     function toDom (html, options, parent){
-        // create a node from an HTML string
         var node = dom('div', {html: html});
         parent = byId(parent || options);
         if(parent){
@@ -247,7 +225,11 @@
     function addChildren (node, children) {
         if(Array.isArray(children)){
             for(var i = 0; i < children.length; i++){
-                node.appendChild(children[i]);
+            	if(typeof children[i] === 'string'){
+					node.appendChild(toDom(children[i]));
+				}else {
+					node.appendChild(children[i]);
+				}
             }
         }
         else{
@@ -262,16 +244,10 @@
             if(typeof html === 'object'){
                 addChildren(node, html);
             }else{
+            	// careful assuming textContent -
+				// misses some HTML, such as entities (&npsp;)
                 node.innerHTML = html;
             }
-
-            // misses some HTML, such as entities (&npsp;)
-            //else if(html.indexOf('<') === 0) {
-            //    node.innerHTML = html;
-            //}
-            //else{
-            //    node.appendChild(document.createTextNode(html));
-            //}
         }
         if(options.text){
             node.appendChild(document.createTextNode(options.text));
@@ -282,49 +258,20 @@
     }
     
     function dom (nodeType, options, parent, prepend){
-        // create a node
-        // if first argument is a string and starts with <, it is assumed
-        // to use toDom, and creates a node from HTML. Optional second arg is
-        // parent to append to
-        // else:
-        //      nodeType: string, type of node to create
-        //      options: object with style, className, or attr properties
-        //          (can also be objects)
-        //      parent: Node, optional node to append to
-        //      prepend: truthy, to append node as the first child
-        //
+		options = options || {};
+
+		// if first argument is a string and starts with <, pass to toDom()
         if(nodeType.indexOf('<') === 0){
             return toDom(nodeType, options, parent);
         }
 
-        options = options || {};
-        var
-            className = options.css || options.className || options.class,
-            node = document.createElement(nodeType);
+        var node = document.createElement(nodeType);
 
         parent = getNode(parent);
 
-        if(className){
-            node.className = className;
-        }
-        
         addContent(node, options);
-        
-        if(options.cssText){
-            node.style.cssText = options.cssText;
-        }
 
-        if(options.id){
-            node.id = options.id;
-        }
-
-        if(options.style){
-            style(node, options.style);
-        }
-
-        if(options.attr){
-            attr(node, options.attr);
-        }
+		attr(node, options);
 
         if(parent && isNode(parent)){
             if(prepend && parent.hasChildNodes()){
@@ -337,19 +284,8 @@
         return node;
     }
 
-    function getNextSibling (node) {
-        var sibling = node;
-        while(sibling){
-            sibling = sibling.nextSibling;
-            if(sibling && sibling.nodeType === 1){
-                return sibling;
-            }
-        }
-        return null;
-    }
-
     function insertAfter (refNode, node) {
-        var sibling = getNextSibling(refNode);
+        var sibling = refNode.nextElementSibling;
         if(!sibling){
             refNode.parentNode.appendChild(node);
         }else{
@@ -381,57 +317,9 @@
         }
     }
 
-    function ancestor (node, selector){
-        // TODO: replace this with 'closest' and 'matches'
-        // gets the ancestor of node based on selector criteria
-        // useful for getting the target node when a child node is clicked upon
-        //
-        // USAGE
-        //      on.selector(childNode, '.app.active');
-        //      on.selector(childNode, '#thinger');
-        //      on.selector(childNode, 'div');
-        //	DOES NOT SUPPORT:
-        //		combinations of above
-        var
-            test,
-            parent = node;
-
-        if(selector.indexOf('.') === 0){
-            // className
-            selector = selector.replace('.', ' ').trim();
-            test = function(n){
-                return n.classList.contains(selector);
-            };
-        }
-        else if(selector.indexOf('#') === 0){
-            // node id
-            selector = selector.replace('#', '').trim();
-            test = function(n){
-                return n.id === selector;
-            };
-        }
-        else if(selector.indexOf('[') > -1){
-            // attribute
-            console.error('attribute selectors are not yet supported');
-        }
-        else{
-            // assuming node name
-            selector = selector.toUpperCase();
-            test = function(n){
-                return n.nodeName === selector;
-            };
-        }
-
-        while(parent){
-            if(parent === document.body || parent === document){ return false; }
-            if(test(parent)){ break; }
-            parent = parent.parentNode;
-        }
-
-        return parent;
-    }
-
     dom.classList = {
+    	// in addition to fixing IE11 toggle
+		// these methods also handle arrays
         remove: function (node, names){
             toArray(names).forEach(function(name){
                 node.classList.remove(name);
@@ -478,27 +366,23 @@
             return name.trim();
         });
     }
-
-    if (!window.requestAnimationFrame) {
-        dom.requestAnimationFrame = function(callback){
-            setTimeout(callback, 0);
-        };
-    }else{
-        dom.requestAnimationFrame = function(cb){
-            window.requestAnimationFrame(cb);
-        };
-    }
     
     function normalize (val){
-        if(val === 'false'){
-            return false;
-        }
-        else if(val === 'null'){
-			return null;
+        if(typeof val === 'string') {
+			if(val === 'false'){
+				return false;
+			}
+			else if(val === 'null'){
+				return null;
+			}
+			else if(val === 'true'){
+				return true;
+			}
+			if (val.indexOf('/') > -1 || (val.match(/-/g) || []).length > 1) {
+				// type of date
+				return val;
+			}
 		}
-        else if(val === 'true'){
-            return true;
-        }
         if(!isNaN(parseFloat(val))){
             return parseFloat(val);
         }
@@ -516,11 +400,9 @@
     dom.destroy = destroy;
     dom.uid = uid;
     dom.isNode = isNode;
-    dom.ancestor = ancestor;
     dom.toDom = toDom;
     dom.fromDom = fromDom;
     dom.insertAfter = insertAfter;
-    dom.getNextSibling = getNextSibling;
 
     return dom;
 }));

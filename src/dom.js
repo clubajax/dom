@@ -26,11 +26,12 @@
         destroyer = document.createElement('div');
 
     function uid (type){
-        if(!uids[type]){
-            uids[type] = [];
+		type = type || 'uid';
+        if(uids[type] === undefined){
+            uids[type] = 0;
         }
-        var id = type + '-' + (uids[type].length + 1);
-        uids[type].push(id);
+        var id = type + '-' + (uids[type] + 1);
+        uids[type]++;
         return id;
     }
 
@@ -40,15 +41,11 @@
         return !!item && typeof item === 'object' && (typeof item.innerHTML === 'string' || item.nodeName === '#document-fragment');
     }
 
-    function getNode (item){
-        if(typeof item === 'string'){
-            return document.getElementById(item);
-        }
-        return item;
-    }
-
-    function byId (id){
-        return getNode(id);
+    function byId (item){
+		if(typeof item === 'string'){
+			return document.getElementById(item);
+		}
+		return item;
     }
 
     function style (node, prop, value){
@@ -139,7 +136,7 @@
         // returned object is immutable
         // add scroll positioning and convenience abbreviations
         var
-            dimensions = getNode(node).getBoundingClientRect();
+            dimensions = byId(node).getBoundingClientRect();
         return {
             top: dimensions.top,
             right: dimensions.right,
@@ -267,7 +264,7 @@
 
         var node = document.createElement(nodeType);
 
-        parent = getNode(parent);
+        parent = byId(parent);
 
         addContent(node, options);
 

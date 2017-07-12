@@ -210,9 +210,41 @@
 
         });
 
-        suite('temp', function () {
+        suite('utils', function () {
 
+        	test('it should have incrementing UIDs', function () {
+				var
+					id1 = dom.uid('foo'),
+					id2 = dom.uid('foo'),
+					id3 = dom.uid('bar'),
+					id4 = dom.uid('bar'),
+					id5 = dom.uid('bar'),
+					id6 = dom.uid('bar'),
+					id7 = dom.uid();
 
+				expect(id1).to.equal('foo-1');
+				expect(id2).to.equal('foo-2');
+				expect(id3).to.equal('bar-1');
+				expect(id4).to.equal('bar-2');
+				expect(id5).to.equal('bar-3');
+				expect(id6).to.equal('bar-4');
+				expect(id7).to.equal('uid-1');
+			});
+
+        	test.only('it should normalize values', function () {
+        		var obj = {a:1};
+				expect(dom.normalize(obj)).to.equal(obj);
+				expect(dom.normalize('1')).to.equal(1);
+				expect(dom.normalize('-1')).to.equal(-1);
+				expect(dom.normalize('1.01')).to.equal(1.01);
+				expect(dom.normalize('-1.01')).to.equal(-1.01);
+				expect(dom.normalize('0')).to.equal(0);
+				expect(dom.normalize('true')).to.equal(true);
+				expect(dom.normalize('false')).to.equal(false);
+				expect(dom.normalize('a')).to.equal('a');
+				expect(dom.normalize('12/12/2017')).to.equal('12/12/2017');
+				expect(dom.normalize('12-12-2017')).to.equal('12-12-2017');
+			});
         });
 
         mocha.run();

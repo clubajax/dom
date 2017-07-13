@@ -366,6 +366,7 @@
     
     function normalize (val){
         if(typeof val === 'string') {
+        	val = val.trim();
 			if(val === 'false'){
 				return false;
 			}
@@ -375,8 +376,7 @@
 			else if(val === 'true'){
 				return true;
 			}
-			if (val.indexOf('/') > -1 || (val.match(/-/g) || []).length > 1) {
-				// type of date
+			if (val.indexOf('/') > -1 || val.indexOf(' ') > -1 || val.indexOf('-') > 0) {
 				return val;
 			}
 		}

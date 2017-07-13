@@ -244,6 +244,10 @@
 				expect(dom.normalize('a')).to.equal('a');
 				expect(dom.normalize('12/12/2017')).to.equal('12/12/2017');
 				expect(dom.normalize('12-12-2017')).to.equal('12-12-2017');
+				expect(dom.normalize('14 Street Ave')).to.equal('14 Street Ave');
+				expect(dom.normalize('222-222-2222')).to.equal('222-222-2222');
+				expect(dom.normalize('(222)-222-2222')).to.equal('(222)-222-2222');
+				expect(dom.normalize('12345')).to.equal(12345);
 			});
         });
 

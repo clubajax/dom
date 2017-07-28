@@ -219,20 +219,22 @@
         return object;
     }
 
-    function addChildren (node, children) {
-        if(Array.isArray(children)){
-            for(var i = 0; i < children.length; i++){
-            	if(typeof children[i] === 'string'){
-					node.appendChild(toDom(children[i]));
-				}else {
-					node.appendChild(children[i]);
+	function addChildren (node, children) {
+		if(Array.isArray(children)){
+			for(var i = 0; i < children.length; i++){
+				if(children[i]) {
+					if (typeof children[i] === 'string') {
+						node.appendChild(toDom(children[i]));
+					} else {
+						node.appendChild(children[i]);
+					}
 				}
-            }
-        }
-        else{
-            node.appendChild(children);
-        }
-    }
+			}
+		}
+		else if (children) {
+			node.appendChild(children);
+		}
+	}
 
     function addContent (node, options) {
         var html;

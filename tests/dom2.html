@@ -248,6 +248,9 @@
 				expect(dom.normalize('222-222-2222')).to.equal('222-222-2222');
 				expect(dom.normalize('(222)-222-2222')).to.equal('(222)-222-2222');
 				expect(dom.normalize('12345')).to.equal(12345);
+
+				// is there a case for 123abc? password maybe? Can we opt out?
+				// IDs?
 			});
         });
 

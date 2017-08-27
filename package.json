@@ -1,13 +1,29 @@
 {
-	"author": "Mike Wilcox @clubajax",
-	"name": "dom",
-	"version": "2.1.2",
-	"main":"src/dom.js",
-	"description": "A simple library for creating, and modifying DOM nodes.",
-	"license": "MIT",
-    "readmeFilename": "README.md",
-	"repository": {
-        "type": "git",
-        "url": "git://github.com/clubajax/dom.git"
-    }
+  "author": "Mike Wilcox @clubajax",
+  "name": "@clubajax/dom",
+  "version": "2.1.3",
+  "main": "src/dom.js",
+  "description": "A simple library for creating, and modifying DOM nodes.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/clubajax/dom.git"
+  },
+  "bugs": {
+    "url": "https://github.com/clubajax/dom/issues"
+  },
+  "homepage": "https://github.com/clubajax/dom#readme",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "dom",
+    "elements",
+    "nodes",
+    "creation",
+    "manipulation"
+  ]
 }

@@ -253,6 +253,16 @@ Returns a normalized value from the passed string. Conversions look like:
     'null' => null
     '1.5' => 1.5
 
+**dom.frag()**
+
+Pass in an array of nodes and it returns a document fragment:
+
+    var frag = dom.frag([
+        dom('header', { html: `Custom ${item.label}` }),
+        dom('h1', { html: `Value: ${item.value}` })
+    ]);
+    node.appendChild(frag);
+    
 ## Comes with Stub Included!
 
 The benefit of using `dom` exclusively in your code, is it comes complete with a "dom stub",

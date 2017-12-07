@@ -316,6 +316,24 @@
         }
     }
 
+    dom.frag = function (nodes) {
+		var frag = document.createDocumentFragment();
+		if (arguments.length > 1) {
+			for (var i = 0; i < arguments.length; i++) {
+				frag.appendChild(arguments[i]);
+			}
+		} else {
+			if (Array.isArray(nodes)) {
+				nodes.forEach(function (n) {
+					frag.appendChild(n);
+				});
+			} else {
+				frag.appendChild(nodes);
+			}
+		}
+		return frag;
+	};
+
     dom.classList = {
     	// in addition to fixing IE11 toggle
 		// these methods also handle arrays

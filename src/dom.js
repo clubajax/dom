@@ -107,7 +107,7 @@
 				return;
 			}
 			else if(prop === 'className' || prop === 'class') {
-				node.className = value;
+				dom.classList.add(node, value);
 			}
 			else if(prop === 'style') {
 				style(node, value);

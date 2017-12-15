@@ -1,9 +1,9 @@
 /* UMD.define */ (function (root, factory) {
-    if (typeof customLoader === 'function'){ customLoader(factory, 'dom'); }else if (typeof define === 'function' && define.amd) { define([], factory); } else if (typeof exports === 'object') { module.exports = factory(); } else { root.returnExports = factory(); window.dom = factory(); }
+    if (typeof customLoader === 'function'){ customLoader(factory, 'dom'); } else if (typeof define === 'function' && define.amd) { define([], factory); } else if (typeof exports === 'object') { module.exports = factory(); } else { root.returnExports = factory(); window.dom = factory(); }
 }(this, function () {
 	'use strict';
     var
-        isFloat = {
+        isInteger = {
             opacity: 1,
             zIndex: 1,
             'z-index': 1
@@ -69,9 +69,14 @@
         // getter, if a simple style
         if(node.style[prop]){
             if(isDimension[prop]){
-                return parseInt(node.style[prop], 10);
+            	if (/px/.test(node.style[prop])) {
+					return parseFloat(node.style[prop]);
+				}
+				if (/%/.test(node.style[prop])) {
+					return parseFloat(node.style[prop]) * 0.01;
+				}
             }
-            if(isFloat[prop]){
+            if(isInteger[prop]){
                 return parseFloat(node.style[prop]);
             }
             return node.style[prop];
@@ -349,7 +354,7 @@
 	};
 
     dom.classList = {
-    	// in addition to fixing IE11 toggle
+    	// in addition to fixing IE11-toggle,
 		// these methods also handle arrays
         remove: function (node, names){
             toArray(names).forEach(function(name){
@@ -409,7 +414,7 @@
 				return true;
 			}
 			// finds strings that start with numbers, but are not numbers:
-			// '1team' '123 Street', '1-2-3', etc
+			// '2team' '123 Street', '1-2-3', etc
 			if (('' + val).replace(/-?\d*\.?\d*/, '').length) {
 				return val;
 			}

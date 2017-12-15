@@ -61,13 +61,21 @@
 					expect(node.style.display).to.equal('inline-block');
 				});
 
+				test('it should get style', function () {
+					var node = dom('div', {style:{opacity:0.5, width: '20%', top: '-20%', height: '20px'}});
+					expect(dom.style(node, 'opacity')).to.equal(0.5);
+					expect(dom.style(node, 'width')).to.equal(0.2);
+					expect(dom.style(node, 'top')).to.equal(-0.2);
+					expect(dom.style(node, 'height')).to.equal(20);
+				});
+
 				test('it should set attributes', function () {
 					var node = dom('button', {tabindex: 0, disabled: true});
 					expect(node.getAttribute('tabindex')).to.equal('0');
 					expect(node.getAttribute('disabled')).to.equal('true');
 				});
 
-				test.only('it should set attribute objects last', function () {
+				test('it should set attribute objects last', function () {
 					var node = dom('button', {data: {a: 1}, tabindex: 0, disabled: true});
 					expect(node.getAttribute('tabindex')).to.equal('0');
 					expect(node.getAttribute('disabled')).to.equal('true');
@@ -254,6 +262,8 @@
 				expect(dom.normalize('222-222-2222')).to.equal('222-222-2222');
 				expect(dom.normalize('(222)-222-2222')).to.equal('(222)-222-2222');
 				expect(dom.normalize('12345')).to.equal(12345);
+
+				expect(dom.normalize('-20%')).to.equal('-20%');
 
 				// is there a case for 123abc? password maybe? Can we opt out?
 				// IDs?

@@ -93,12 +93,26 @@
 
     function attr (node, prop, value){
         var key;
+
         if(typeof prop === 'object'){
-            for(key in prop){
-                if(prop.hasOwnProperty(key)){
-                    attr(node, key, prop[key]);
-                }
-            }
+
+        	var bools = {};
+        	var strings = {};
+        	var objects = {};
+        	Object.keys(prop).forEach(function (key) {
+        		if (typeof prop[key] === 'boolean') {
+        			bools[key] = prop[key];
+				} else if(typeof prop[key] === 'object') {
+        			objects[key] = prop[key];
+				} else {
+        			strings[key] = prop[key];
+				}
+			});
+
+        	Object.keys(bools).forEach(function (key) { attr(node, key, prop[key]); });
+			Object.keys(strings).forEach(function (key) { attr(node, key, prop[key]); });
+			Object.keys(objects).forEach(function (key) { attr(node, key, prop[key]); });
+
             return null;
         }
         else if(value !== undefined){

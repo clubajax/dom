@@ -67,6 +67,12 @@
 					expect(node.getAttribute('disabled')).to.equal('true');
 				});
 
+				test.only('it should set attribute objects last', function () {
+					var node = dom('button', {data: {a: 1}, tabindex: 0, disabled: true});
+					expect(node.getAttribute('tabindex')).to.equal('0');
+					expect(node.getAttribute('disabled')).to.equal('true');
+				});
+
 				test('it should set attributes (back compat)', function () {
 					var node = dom('button', {attr:{tabindex: 0, disabled: true}});
 					console.log(node);
@@ -231,7 +237,7 @@
 				expect(id7).to.equal('uid-1');
 			});
 
-        	test.only('it should normalize values', function () {
+        	test('it should normalize values', function () {
         		var obj = {a:1};
 				expect(dom.normalize(obj)).to.equal(obj);
 				expect(dom.normalize('1')).to.equal(1);

@@ -395,12 +395,13 @@
 
     function toArray (names){
         if(!names){
-            console.error('dom.classList should include a node and a className');
             return [];
         }
         return names.split(' ').map(function (name) {
             return name.trim();
-        });
+        }).filter(function (name) {
+        	return !!name;
+		});
     }
 
 	function normalize(val) {

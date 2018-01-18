@@ -60,7 +60,6 @@
 			return null;
 		} else if (value !== undefined) {
 			// property setter
-			console.log('set', prop, value);
 			if (typeof value === 'number' && isDimension(prop)) {
 				value += 'px';
 			}

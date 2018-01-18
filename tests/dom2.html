@@ -2,10 +2,12 @@
 <html lang="en">
 <head>
     <title>Test dom</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mocha/2.5.3/mocha.css">
     <script src="../src/dom.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mocha/2.5.3/mocha.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chai/3.5.0/chai.min.js"></script>
+	<link rel="stylesheet" href="../node_modules/mocha/mocha.css">
+	<script src="../node_modules/mocha/mocha.js"></script>
+	<script src="../node_modules/chai/chai.js"></script>
+
+	<script src="//localhost:35750/livereload.js"></script>
     <style>
         body{
             font-family: sans-serif;
@@ -15,6 +17,21 @@
             position: absolute;
             left: -10000px;
         }
+		#style-tests{
+			position: relative;
+		}
+		#style-test-1{
+			position: absolute;
+			z-index: 1;
+			border-style: solid;
+			border-color: aqua;
+			border-width: 3px;
+			min-width: 0px;
+			width: 30px;
+			background-color: rgba(255,0,0,.8);
+			opacity: .9;
+			border-left-width: 0px;
+		}
     </style>
 </head>
 <body>
@@ -31,6 +48,12 @@
         <span>d</span>
     </div>
 
+	<div id="style-tests">
+		<div id="style-test-1" style="height: 20px; border-right-width: 0"></div>
+		<div id="style-test-2" style=""></div>
+		<div id="style-test-blank" style=""></div>
+	</div>
+
     <div id="mocha"></div>
     <script>
 
@@ -42,6 +65,7 @@
             dom = window.dom;
 
         suite('dom', function() {
+
 			suite('attributes', function() {
 				test('it should add a className', function () {
 					var node1 = dom('div', {class: 'foo'});
@@ -219,6 +243,76 @@
 					txt = parent.textContent.trim().replace(/\s/g, '');
 					expect(txt).to.equal('abcd');
 					dom.destroy(parent);
+				});
+			});
+
+			suite.only('style', function () {
+				test('it should get styles', function () {
+
+					var n = dom.byId('style-test-1');
+
+
+					expect(dom.style(n, 'width')).to.equal(30);
+					expect(dom.style(n, 'min-width')).to.equal(0);
+					expect(dom.style(n, 'height')).to.equal(20);
+					expect(dom.style(n, 'opacity')).to.equal(0.9);
+					expect(dom.style(n, 'border-top-width')).to.equal(3);
+					expect(dom.style(n, 'border-right-width')).to.equal(0);
+					expect(dom.style(n, 'border-left-width')).to.equal(0);
+					expect(dom.style(n, 'z-index')).to.equal(1);
+
+					console.log('',
+						n.style.width,
+						typeof n.style.opacity,
+						n.style.height,
+						dom.style(n, 'width'),
+						dom.style(n, 'min-width'),
+						dom.style(n, 'height'),
+						dom.style(n, 'opacity'),
+						dom.style(n, 'border-top-width'),
+						dom.style(n, 'border-right-width'),
+						dom.style(n, 'border-left-width'),
+						dom.style(n, 'background-color')
+					);
+				});
+
+				test('it should set styles', function () {
+					var n = dom.byId('style-test-blank');
+
+					dom.style(n, {
+						position: 'absolute',
+						zIndex: 1,
+						opacity: 0.5,
+						borderStyle: 'solid',
+						'border-color': 'blue',
+						borderWidth: 2,
+						top: 5,
+						left: 30
+					});
+					dom.style(n, 'width', 10);
+					dom.style(n, 'height', 10);
+					dom.style(n, 'margin', '10%');
+
+					expect(n.style.width).to.equal('10px');
+					expect(n.style.height).to.equal('10px');
+					expect(n.style.position).to.equal('absolute');
+					expect(n.style.zIndex).to.equal('1');
+					expect(n.style.opacity).to.equal('0.5');
+					expect(n.style.borderStyle).to.equal('solid');
+					expect(n.style.borderColor).to.equal('blue');
+					expect(n.style.top).to.equal('5px');
+					expect(n.style.left).to.equal('30px');
+					expect(n.style.margin).to.equal('10%');
+					expect(n.style.borderWidth).to.equal('2px');
+
+
+					expect(dom.style(n, 'margin')).to.equal(0.1);
+					expect(dom.style(n, 'z-index')).to.equal(1);
+					expect(dom.style(n, 'opacity')).to.equal(0.5);
+					expect(dom.style(n, 'top')).to.equal(5);
+					expect(dom.style(n, 'border')).to.equal('2px solid rgb(0, 0, 255)');
+
+					console.log('brd', dom.style(n, 'border'));
 				});
 			});
 

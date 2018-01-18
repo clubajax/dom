@@ -206,6 +206,13 @@ Bonus: if it is detected to be a jQuery $element, it "de-jQuery-ifies" it, and r
 Returns the dimensions of the passed node. Mainly an alias for `getBoundingClientRect()`. If the
 passed item in the window object, returns its width and height.
 
+**dom.size(node, type)**
+
+Returns the width and height of the passed node. If the position is not needed, this is faster than `dom.box`. The `type` parameter indicates:
+ * `client`: returns the inner height/width of an element in pixels, including padding but not the scrollbar height, border, or margin.
+ * `scroll`: is a measurement of the height/width of an element's content including content not visible on the screen due to overflow.
+ * `offset` (default): is a measurement which includes the element borders, the element padding, the element scrollbar (if present, if rendered) and the element CSS height/width.
+
 **dom.query([?node], 'div.myClass')**
 
 An alias for `document.querySelector`, so the parameter should conform to that.

@@ -206,6 +206,10 @@ Bonus: if it is detected to be a jQuery $element, it "de-jQuery-ifies" it, and r
 Returns the dimensions of the passed node. Mainly an alias for `getBoundingClientRect()`. If the
 passed item in the window object, returns its width and height.
 
+**dom.relBox(node)**
+
+Returns the dimensions of the passed node and it's position relative to its parent node. Returns simple `{x,y,w,h}`.
+
 **dom.size(node, type)**
 
 Returns the width and height of the passed node. If the position is not needed, this is faster than `dom.box`. The `type` parameter indicates:

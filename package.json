@@ -1,7 +1,7 @@
 {
   "author": "Mike Wilcox @clubajax",
   "name": "@clubajax/dom",
-  "version": "2.4.1",
+  "version": "2.5.0",
   "main": "src/dom.js",
   "description": "A simple library for creating, and modifying DOM nodes.",
   "license": "MIT",

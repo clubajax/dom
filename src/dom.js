@@ -170,6 +170,19 @@
 		};
 	}
 
+	function relBox (node) {
+		const parent = node.parentNode;
+		const pBox = box(parent);
+		const box = box(node);
+
+		return {
+			w: box.w,
+			h: box.h,
+			x: box.left - pBox.left,
+			y: box.top - pBox.top
+		};
+	}
+
 	function size (node, type) {
 		if (node === window) {
 			node = document.documentElement;
@@ -465,6 +478,7 @@
 	dom.fromDom = fromDom;
 	dom.insertAfter = insertAfter;
 	dom.size = size;
+	dom.relBox = relBox;
 
 	return dom;
 }));

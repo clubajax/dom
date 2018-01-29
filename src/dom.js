@@ -170,16 +170,16 @@
 		};
 	}
 
-	function relBox (node) {
-		const parent = node.parentNode;
+	function relBox (node, parentNode) {
+		const parent = parentNode || node.parentNode;
 		const pBox = box(parent);
-		const box = box(node);
+		const bx = box(node);
 
 		return {
-			w: box.w,
-			h: box.h,
-			x: box.left - pBox.left,
-			y: box.top - pBox.top
+			w: bx.w,
+			h: bx.h,
+			x: bx.left - pBox.left,
+			y: bx.top - pBox.top
 		};
 	}
 

@@ -94,6 +94,29 @@
             expect = chai.expect,
             dom = window.dom;
 
+        function testMutate () {
+			var node = dom('div', {}, body);
+			var config = { childList: true };
+			var callback = function(mutationsList) {
+				console.log('mutationsList', mutationsList);
+				console.log('destroyed', node.destroyed);
+				console.log('node', node.parentNode);
+			};
+			var observer = new MutationObserver(callback);
+			observer.observe(node.parentNode, config);
+
+			setTimeout(function () {
+				dom.destroy(node);
+			}, 300);
+		}
+		//testMutate();
+
+		function emit (node, eventName) {
+			var event = node.ownerDocument.createEvent('HTMLEvents');
+			event.initEvent(eventName, true, true); // event type, bubbling, cancelable
+			return node.dispatchEvent(event);
+		}
+
         suite('dom', function() {
 
 			suite('attributes', function() {
@@ -363,6 +386,59 @@
 			});
 
         });
+
+        suite('events', function () {
+			test('it should connect and disconnect `click` events', function (done) {
+				var events = [];
+				var node = dom('button', {
+					html: 'Click Me',
+					onClick: function () {
+						console.log('click!');
+						events.push(1);
+					}
+				}, body);
+
+				emit(node, 'click');
+				expect(events.join(',')).to.equal('1');
+
+				dom.destroy(node);
+
+				setTimeout(function () {
+					emit(node, 'click');
+					expect(events.join(',')).to.equal('1');
+					done();
+				}, 100);
+			});
+
+			test.only('it should connect and disconnect `input` events', function (done) {
+				var events = [];
+				var node = dom('input', {
+					onInput: function () {
+						console.log('input!', node.value);
+						events.push(1);
+					},
+					onChange: function () {
+						console.log('change!', node.value);
+						events.push(1);
+					}
+				}, body);
+
+				node.value = 'a';
+				emit(node, 'input');
+				emit(node, 'change');
+				expect(events.join(',')).to.equal('1,1');
+				node.value = 'b';
+
+				dom.destroy(node);
+
+				setTimeout(function () {
+					emit(node, 'input');
+					emit(node, 'change');
+					expect(events.join(',')).to.equal('1,1');
+					done();
+				}, 100);
+			});
+		});
 
         suite('utils', function () {
 

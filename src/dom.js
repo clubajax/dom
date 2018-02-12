@@ -101,11 +101,18 @@
 			var bools = {};
 			var strings = {};
 			var objects = {};
+			var events = {};
 			Object.keys(prop).forEach(function (key) {
 				if (typeof prop[key] === 'boolean') {
 					bools[key] = prop[key];
 				} else if (typeof prop[key] === 'object') {
 					objects[key] = prop[key];
+				} else if (typeof prop[key] === 'function') {
+					if (/on[A-Z]/.test(key)) {
+						events[key] = prop[key];
+					} else {
+						console.warn('dom warning: function used with `onEvent` syntax');
+					}
 				} else {
 					strings[key] = prop[key];
 				}
@@ -114,6 +121,7 @@
 			// assigning properties in specific order of type, namely objects last
 			Object.keys(bools).forEach(function (key) { attr(node, key, prop[key]); });
 			Object.keys(strings).forEach(function (key) { attr(node, key, prop[key]); });
+			Object.keys(events).forEach(function (key) { attr(node, key, prop[key]); });
 			Object.keys(objects).forEach(function (key) { attr(node, key, prop[key]); });
 
 			return null;
@@ -133,6 +141,9 @@
 				// back compat
 				attr(node, value);
 			}
+			else if (typeof value === 'function') {
+				attachEvent(node, prop, value);
+			}
 			else if (typeof value === 'object') {
 				// object, like 'data'
 				node[prop] = value;
@@ -143,6 +154,26 @@
 		}
 
 		return node.getAttribute(prop);
+	}
+
+	function attachEvent (node, prop, value) {
+		var event = prop.replace('on', '').toLowerCase();
+		node.addEventListener(event, value);
+
+		var callback = function(mutationsList) {
+			mutationsList.forEach(function (mutation) {
+				for (var i = 0; i < mutation.removedNodes.length; i++) {
+					var n = mutation.removedNodes[i];
+					if (n === node) {
+						node.removeEventListener(event, value);
+						observer.disconnect();
+						break;
+					}
+				}
+			});
+		};
+		var observer = new MutationObserver(callback);
+		observer.observe(node.parentNode || document.body, { childList: true });
 	}
 
 	function box (node) {
@@ -352,6 +383,7 @@
 	function destroy (node) {
 		// destroys a node completely
 		//
+		node.destroyed = true;
 		if (node) {
 			destroyer.appendChild(node);
 			destroyer.innerHTML = '';

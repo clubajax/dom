@@ -191,8 +191,19 @@ dom('my-custom', {
     }
 });
 ```
-
 You could also use dom.attr() to pass a node, but that wouldn't make much sense.
+
+Events can be added to a node. Is is expected that the value will be a function and the key will be an event name, prepended with `on` and a capital, such as in the example:
+```jsx harmony
+dom('button', {
+    onClick: function () {
+    	console.log('The button has been clicked');
+    }
+});
+```
+
+A MutationObserver is used to disconnect the event when the node is destroyed or removed from the document.
+
 
 **dom.byId('nodeId')**
 

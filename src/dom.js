@@ -383,8 +383,8 @@
 	function destroy (node) {
 		// destroys a node completely
 		//
-		node.destroyed = true;
 		if (node) {
+			node.destroyed = true;
 			destroyer.appendChild(node);
 			destroyer.innerHTML = '';
 		}

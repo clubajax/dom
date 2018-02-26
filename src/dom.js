@@ -149,7 +149,11 @@
 				node[prop] = value;
 			}
 			else {
-				node.setAttribute(prop, value);
+				if (value === false) {
+					node.removeAttribute(prop);
+				} else {
+					node.setAttribute(prop, value);
+				}
 			}
 		}
 

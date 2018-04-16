@@ -152,7 +152,7 @@
 					expect(node.getAttribute('disabled')).to.equal('true');
 				});
 
-				test.only('it should remove boolean falsey values', function () {
+				test('it should remove boolean falsey values', function () {
 					var node = dom('button', {disabled: false, readonly: false});
 					expect(node.getAttribute('disabled')).to.equal(null);
 					expect(node.getAttribute('readonly')).to.equal(null);

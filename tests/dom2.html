@@ -317,6 +317,27 @@
 					expect(txt).to.equal('abcd');
 					dom.destroy(parent);
 				});
+
+				test.only('it should insert at position', function () {
+					var parent = dom('div', {
+						html: [
+							dom('span', { html: 'A'}),
+							dom('span', { html: 'B'}),
+							dom('span', { html: 'C'})
+						]
+					}, body);
+					dom.place(parent, dom('span', { html: 'Z'}), 1);
+					expect(parent.textContent).to.equal('AZBC');
+					dom.place(parent, dom('span', { html: 'Y'}), 0);
+					expect(parent.textContent).to.equal('YAZBC');
+					dom.place(parent, dom('span', { html: 'W'}), 5);
+					expect(parent.textContent).to.equal('YAZBCW');
+
+					var A = parent.children[1];
+					dom.place(parent, A, 3);
+					expect(parent.textContent).to.equal('YZABCW');
+
+				});
 			});
 
 			suite('style', function () {

@@ -241,6 +241,10 @@ NodeList.
 
 Inserts a node after the reference sibling.
 
+**dom.place(parentNode, node, position)**
+
+Inserts a node at the child position of the parentNode. Handles bad positions (null, > children.length, etc).
+
 **dom.destroy(node)**
 
 Destroys a node completely.

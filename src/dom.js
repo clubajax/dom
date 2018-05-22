@@ -384,6 +384,19 @@
 		return sibling;
 	}
 
+	function place (parent, node, position) {
+		if (!parent.children.length ||
+			position === null ||
+			position === undefined ||
+			position === -1 ||
+			position >= parent.children.length
+		) {
+			parent.appendChild(node);
+			return;
+		}
+		parent.insertBefore(node, parent.children[position]);
+	}
+
 	function destroy (node) {
 		// destroys a node completely
 		//
@@ -515,6 +528,7 @@
 	dom.insertAfter = insertAfter;
 	dom.size = size;
 	dom.relBox = relBox;
+	dom.place = place;
 
 	return dom;
 }));

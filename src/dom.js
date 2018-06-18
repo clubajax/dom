@@ -161,7 +161,7 @@
 	}
 
 	function attachEvent (node, prop, value) {
-		var event = prop.replace('on', '').toLowerCase();
+		var event = toEventName(prop);
 		node.addEventListener(event, value);
 
 		var callback = function(mutationsList) {
@@ -479,17 +479,6 @@
 		}
 	};
 
-	function toArray (names) {
-		if (!names) {
-			return [];
-		}
-		return names.split(' ').map(function (name) {
-			return name.trim();
-		}).filter(function (name) {
-			return !!name;
-		});
-	}
-
 	function normalize (val) {
 		if (typeof val === 'string') {
 			val = val.trim();
@@ -510,6 +499,30 @@
 			return parseFloat(val);
 		}
 		return val;
+	}
+
+	function toArray (names) {
+		if (!names) {
+			return [];
+		}
+		return names.split(' ').map(function (name) {
+			return name.trim();
+		}).filter(function (name) {
+			return !!name;
+		});
+	}
+
+	function toEventName (s) {
+		s = s.replace('on', '');
+		var str = '';
+		for(var i = 0; i < s.length; i++) {
+			if (i === 0 || s.charCodeAt(i) > 90) {
+				str += s[i].toLowerCase();
+			} else {
+				str += '-' + s[i].toLowerCase();
+			}
+		}
+		return str;
 	}
 
 	dom.normalize = normalize;

@@ -325,7 +325,7 @@
 				dom.destroy(parent);
 			});
 
-			test.only('it should insert at position', function () {
+			test('it should insert at position', function () {
 				var parent = dom('div', {
 					html: [
 						dom('span', { html: 'A' }),
@@ -344,6 +344,20 @@
 				dom.place(parent, A, 3);
 				expect(parent.textContent).to.equal('YZABCW');
 
+			});
+
+			test('it should remove all children', function () {
+				var node = dom('div', {
+					html: [
+						dom('span'),
+						dom('span'),
+						dom('span')
+					]
+				}, body);
+				expect(node.children.length).to.equal(3);
+				var children = dom.removeChildren(node);
+				expect(node.children.length).to.equal(0);
+				expect(children.length).to.equal(3);
 			});
 		});
 
@@ -487,7 +501,7 @@
 			}, 100);
 		});
 
-		test.only('it should connect to complex event names', function (done) {
+		test('it should connect to complex event names', function (done) {
 			var events = [];
 			var node = dom('button', {
 				html: 'Click Me',

@@ -51,7 +51,7 @@
 	}
 
 	function style (node, prop, value) {
-		var key, computed, result;
+		var computed, result;
 		if (typeof prop === 'object') {
 			// object setter
 			Object.keys(prop).forEach(function (key) {
@@ -94,8 +94,6 @@
 	}
 
 	function attr (node, prop, value) {
-		var key;
-
 		if (typeof prop === 'object') {
 
 			var bools = {};
@@ -164,7 +162,7 @@
 		var event = toEventName(prop);
 		node.addEventListener(event, value);
 
-		var callback = function(mutationsList) {
+		var callback = function (mutationsList) {
 			mutationsList.forEach(function (mutation) {
 				for (var i = 0; i < mutation.removedNodes.length; i++) {
 					var n = mutation.removedNodes[i];
@@ -206,9 +204,9 @@
 	}
 
 	function relBox (node, parentNode) {
-		const parent = parentNode || node.parentNode;
-		const pBox = box(parent);
-		const bx = box(node);
+		var parent = parentNode || node.parentNode;
+		var pBox = box(parent);
+		var bx = box(node);
 
 		return {
 			w: bx.w,
@@ -325,6 +323,15 @@
 		else if (children) {
 			node.appendChild(children);
 		}
+	}
+
+	function removeChildren (node) {
+		var children = [];
+		while (node.children.length) {
+			var child = node.children[0];
+			children.push(node.removeChild(child));
+		}
+		return children;
 	}
 
 	function addContent (node, options) {
@@ -515,7 +522,7 @@
 	function toEventName (s) {
 		s = s.replace('on', '');
 		var str = '';
-		for(var i = 0; i < s.length; i++) {
+		for (var i = 0; i < s.length; i++) {
 			if (i === 0 || s.charCodeAt(i) > 90) {
 				str += s[i].toLowerCase();
 			} else {
@@ -542,6 +549,7 @@
 	dom.size = size;
 	dom.relBox = relBox;
 	dom.place = place;
+	dom.removeChildren = removeChildren;
 
 	return dom;
 }));

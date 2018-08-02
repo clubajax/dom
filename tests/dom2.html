@@ -450,10 +450,16 @@
 	});
 
 	suite('events', function () {
-		test('it should connect and disconnect `click` events', function (done) {
+		test.only('it should connect and disconnect `click` events - and allow functions', function (done) {
+			var value;
+			function data (v) {
+				console.log('value!');
+				value = v;
+			}
 			var events = [];
 			var node = dom('button', {
 				html: 'Click Me',
+				data: data,
 				onClick: function () {
 					console.log('click!');
 					events.push(1);
@@ -462,6 +468,9 @@
 
 			emit(node, 'click');
 			expect(events.join(',')).to.equal('1');
+
+			node.data('test');
+			expect(value).to.equal('test');
 
 			dom.destroy(node);
 

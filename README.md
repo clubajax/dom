@@ -204,6 +204,7 @@ dom('button', {
 
 A MutationObserver is used to disconnect the event when the node is destroyed or removed from the document.
 
+If the key is not appended with `on`, it is treated as an object and assigned to the node (which can then be called as a method).
 
 **dom.byId('nodeId')**
 

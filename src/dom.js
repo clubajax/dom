@@ -100,6 +100,7 @@
 			var strings = {};
 			var objects = {};
 			var events = {};
+			var functions = {};
 			Object.keys(prop).forEach(function (key) {
 				if (typeof prop[key] === 'boolean') {
 					bools[key] = prop[key];
@@ -109,7 +110,7 @@
 					if (/on[A-Z]/.test(key)) {
 						events[key] = prop[key];
 					} else {
-						console.warn('dom warning: function used with `onEvent` syntax');
+						functions[key] = prop[key];
 					}
 				} else {
 					strings[key] = prop[key];
@@ -121,6 +122,7 @@
 			Object.keys(strings).forEach(function (key) { attr(node, key, prop[key]); });
 			Object.keys(events).forEach(function (key) { attr(node, key, prop[key]); });
 			Object.keys(objects).forEach(function (key) { attr(node, key, prop[key]); });
+			Object.keys(functions).forEach(function (key) { attr(node, key, prop[key]); });
 
 			return null;
 		}
@@ -140,7 +142,11 @@
 				attr(node, value);
 			}
 			else if (typeof value === 'function') {
-				attachEvent(node, prop, value);
+				if (/on[A-Z]/.test(prop)) {
+					attachEvent(node, prop, value);
+				} else {
+					node[prop] = value;
+				}
 			}
 			else if (typeof value === 'object') {
 				// object, like 'data'

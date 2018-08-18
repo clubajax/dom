@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Test dom</title>
+	<script src="//localhost:35750/livereload.js"></script>
+	<style>
+		html, body{
+			margin:10px;
+			padding:0;
+			background:#fff;
+			font-family: sans-serif;
+		}
+		
+	</style>
+
+    <script src="../src/dom.js"></script>
+
+</head>
+<body>
+<h1>dom perf test</h1>
+<p style='font-style: italic;'>Test results are in the console.</p>
+<div id="tests">tests!!</div>
+	
+<script type="module">
+
+	function rand (n) {
+		return Math.ceil(((n || 10) * Math.random()));
+	}
+
+	function loop (callback, amt) {
+		for (let i = 0; i <= amt; i++) {
+			callback();
+		}
+	}
+
+	function testStyle () {
+		const repeat = 1000;
+		const node = dom.byId('tests');
+		function setBG () {
+			const rgb = `rgb(${rand(255)},${rand(255)},${rand(255)})`;
+			dom.style(node, 'background-color', rgb);
+		}
+
+		function getBG () {
+			return dom.style(node, 'background-color');
+		}
+
+		function setObj () {
+			const rgb = `rgb(${rand(255)},${rand(255)},${rand(255)})`;
+			const props = {
+				border: `${rand(10)}px solid ${rgb}`,
+				'background-color': `rgb(${rand(255)},${rand(255)},${rand(255)})`
+			};
+			dom.style(node, props);
+		}
+
+		console.time('set bg');
+		loop(setBG, repeat);
+		console.timeEnd('set bg');
+
+		console.time('get bg');
+		loop(getBG, repeat);
+		console.timeEnd('get bg');
+
+		console.time('set bg');
+		loop(setBG, repeat);
+		console.timeEnd('set bg');
+
+		console.time('get bg');
+		loop(getBG, repeat);
+		console.timeEnd('get bg');
+
+
+		console.time('set obj');
+		loop(setObj, repeat);
+		console.timeEnd('set obj');
+
+		console.time('get bg');
+		loop(getBG, repeat);
+		console.timeEnd('get bg');
+
+		console.time('set bg');
+		loop(setBG, repeat);
+		console.timeEnd('set bg');
+
+		console.time('get bg');
+		loop(getBG, repeat);
+		console.timeEnd('get bg');
+
+		// result example:
+		// set bg: 116.7861328125ms
+		// get bg: 93.64697265625ms
+		// set bg: 124.490966796875ms
+		// get bg: 96.331787109375ms
+		// set obj: 151.94091796875ms
+		// get bg: 100.77197265625ms
+		// set bg: 108.03466796875ms
+		// get bg: 97.152099609375ms
+	}
+
+	testStyle();
+</script>
+</body>
+</html>

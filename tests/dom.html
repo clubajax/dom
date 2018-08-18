@@ -1,111 +1,586 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 5//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Test dom</title>
+	<title>Test dom</title>
+	<script src="../src/dom.js"></script>
+	<link rel="stylesheet" href="../node_modules/mocha/mocha.css">
+	<script src="../node_modules/mocha/mocha.js"></script>
+	<script src="../node_modules/chai/chai.js"></script>
+
+	<script src="//localhost:35750/livereload.js"></script>
 	<style>
-		html, body{
-			margin:10px;
-			padding:0;
-			background:#fff;
+		body {
 			font-family: sans-serif;
+			padding: 20px;
 		}
-		#test-box-size{
+
+		#option-div {
 			position: absolute;
-			top: 50px;
-			left: 250px;
-			width: 100px;
-			height: 25px;
-			margin: 0;
-			padding: 0;
+			left: -10000px;
 		}
-		
+
+		#style-tests {
+			position: relative;
+		}
+
+		#style-test-1 {
+			position: absolute;
+			z-index: 1;
+			border-style: solid;
+			border-color: aqua;
+			border-width: 3px;
+			min-width: 0px;
+			width: 30px;
+			background-color: rgba(255, 0, 0, .8);
+			opacity: .9;
+			border-left-width: 0px;
+		}
+
+		#rel-box {
+			position: absolute;
+			top: 100px;
+			right: 100px;
+			width: 200px;
+			height: 200px;
+			border: 1px solid #999;
+		}
+
+		#rel-box-child-1 {
+			position: absolute;
+			top: 25px;
+			left: 25px;
+			width: 100px;
+			height: 100px;
+			border: 1px solid #6f3d99;
+		}
+
+		#rel-box-child-2 {
+			position: absolute;
+			top: 25px;
+			left: 25px;
+			width: 50px;
+			height: 50px;
+			border: 1px solid #992e3e;
+		}
 	</style>
-
-    <script src="../src/dom.js"></script>
-
 </head>
 <body>
-	<h1>dom test</h1>
-	<p style='font-style: italic;'>Test results are in the console.</p>
-	<div id='test-box-size'></div>
-	<div class='query-me one'></div>
-	<div class='query-me two'></div>
-	<div id='test-node'></div>
-	
-	<script>
-		function assert(expr, msg){
-			var result = new Function( 'return ' + expr )();
-			if(result){
-				console.log(msg || expr, 'passed', result);
-			}else{
-				throw new Error(expr || msg);
-				//console.error('failed', expr || msg);
+<h1>dom test</h1>
+<div id="option-div" class="foo" value="bar" selected="a" disabled="true" is-prop>
+	<option value="a">A</option>
+	<option value="b" selected>B</option>
+	<option value="c">C</option>
+</div>
+
+<div id="children-with-whitespace">
+	<span>a</span>
+	<span>c</span>
+	<span>d</span>
+</div>
+
+<div id="style-tests">
+	<div id="style-test-1" style="height: 20px; border-right-width: 0"></div>
+	<div id="style-test-2" style=""></div>
+	<div id="style-test-blank" style=""></div>
+</div>
+
+<div id="rel-box">
+	<div id="rel-box-child-1">
+		<div id="rel-box-child-2"></div>
+	</div>
+</div>
+
+<div id="mocha"></div>
+<script>
+
+	mocha.setup('tdd');
+
+	var
+		body = document.body,
+		expect = chai.expect,
+		dom = window.dom;
+
+	function testMutate () {
+		var node = dom('div', {}, body);
+		var config = { childList: true };
+		var callback = function (mutationsList) {
+			console.log('mutationsList', mutationsList);
+			console.log('destroyed', node.destroyed);
+			console.log('node', node.parentNode);
+		};
+		var observer = new MutationObserver(callback);
+		observer.observe(node.parentNode, config);
+
+		setTimeout(function () {
+			dom.destroy(node);
+		}, 300);
+	}
+
+	//testMutate();
+
+	function emit (node, eventName) {
+		var event = node.ownerDocument.createEvent('HTMLEvents');
+		event.initEvent(eventName, true, true); // event type, bubbling, cancelable
+		return node.dispatchEvent(event);
+	}
+
+	suite('dom', function () {
+
+		suite('attributes', function () {
+			test('it should add a className', function () {
+				var node1 = dom('div', { class: 'foo' });
+				var node2 = dom('div', { className: 'bar' });
+				expect(node1.className).to.equal('foo');
+				expect(node2.className).to.equal('bar');
+			});
+
+			test('it should add an ID', function () {
+				var node = dom('div', { id: 'foo' });
+				expect(node.id).to.equal('foo');
+			});
+
+			test('it should set style', function () {
+				var node = dom('div', { style: { opacity: 0.5, display: 'inline-block' } });
+				expect(node.style.opacity).to.equal('0.5');
+				expect(node.style.display).to.equal('inline-block');
+			});
+
+			test('it should get style', function () {
+				var node = dom('div', { style: { opacity: 0.5, width: '20%', top: '-20%', height: '20px' } });
+				expect(dom.style(node, 'opacity')).to.equal(0.5);
+				expect(dom.style(node, 'width')).to.equal(0.2);
+				expect(dom.style(node, 'top')).to.equal(-0.2);
+				expect(dom.style(node, 'height')).to.equal(20);
+			});
+
+			test('it should set attributes', function () {
+				var node = dom('button', { tabindex: 0, disabled: true });
+				expect(node.getAttribute('tabindex')).to.equal('0');
+				expect(node.getAttribute('disabled')).to.equal('true');
+			});
+
+			test('it should remove boolean falsey values', function () {
+				var node = dom('button', { disabled: false, readonly: false });
+				expect(node.getAttribute('disabled')).to.equal(null);
+				expect(node.getAttribute('readonly')).to.equal(null);
+
+				dom.attr(node, {
+					disabled: true,
+					readonly: true
+				});
+				expect(node.getAttribute('disabled')).to.equal('true');
+				expect(node.getAttribute('readonly')).to.equal('true');
+
+				dom.attr(node, {
+					disabled: false,
+					readonly: false
+				});
+				expect(node.getAttribute('disabled')).to.equal(null);
+				expect(node.getAttribute('readonly')).to.equal(null);
+			});
+
+			test('it should set attribute objects last', function () {
+				var node = dom('button', { data: { a: 1 }, tabindex: 0, disabled: true });
+				expect(node.getAttribute('tabindex')).to.equal('0');
+				expect(node.getAttribute('disabled')).to.equal('true');
+			});
+
+			test('it should set attributes (back compat)', function () {
+				var node = dom('button', { attr: { tabindex: 0, disabled: true } });
+				console.log(node);
+				expect(node.getAttribute('tabindex')).to.equal('0');
+				expect(node.getAttribute('disabled')).to.equal('true');
+			});
+
+		});
+
+		suite('child nodes', function () {
+			test('it should create a node with innerHTML', function () {
+				var node;
+
+				node = dom('div', { html: '<span>span</span>' });
+				expect(dom.queryAll(node, 'span').length).to.equal(1);
+				dom.destroy(node);
+
+				node = dom('div', { innerHTML: '<span>span</span>' });
+				expect(dom.queryAll(node, 'span').length).to.equal(1);
+				dom.destroy(node);
+			});
+
+			test('it should create a node with text', function () {
+				var node;
+
+				node = dom('div', { html: 'text' });
+				expect(node.textContent).to.equal('text');
+				dom.destroy(node);
+
+				node = dom('div', { text: 'text' });
+				expect(node.textContent).to.equal('text');
+				dom.destroy(node);
+			});
+
+			test('it should create a node with a child node', function () {
+				var node;
+
+				node = dom('div', { html: dom('span') });
+				expect(dom.queryAll(node, 'span').length).to.equal(1);
+				dom.destroy(node);
+			});
+
+			test('it should create a node with children', function () {
+				var node;
+
+				node = dom('div', { html: [dom('span'), dom('span'), dom('span')] });
+				expect(dom.queryAll(node, 'span').length).to.equal(3);
+				dom.destroy(node);
+			});
+
+			test('it should create a node with children using mixed values', function () {
+				var node;
+
+				node = dom('div', { html: [dom('span'), '<span></span>'] });
+				expect(dom.queryAll(node, 'span').length).to.equal(2);
+				dom.destroy(node);
+			});
+
+			test('it should create an object from dom', function () {
+				var
+					node = dom.byId('option-div'),
+					o = dom.fromDom(node);
+				console.log('', node);
+				console.log('', o);
+				expect(typeof o).to.equal('object');
+				expect(o.id).to.equal('option-div');
+				expect(o.class).to.equal('foo');
+				expect(o.value).to.equal('bar');
+				expect(o.selected).to.equal('a');
+				expect(o.disabled).to.equal(true);
+				expect(o['is-prop']).to.equal(true);
+				expect(o.children.length).to.equal(3);
+
+				expect(o.children[0].value).to.equal('a');
+				expect(o.children[0].text).to.equal('A');
+				expect(o.children[0].selected).to.equal(undefined);
+
+				expect(o.children[1].value).to.equal('b');
+				expect(o.children[1].text).to.equal('B');
+				expect(o.children[1].selected).to.equal(true);
+
+				expect(o.children[2].value).to.equal('c');
+				expect(o.children[2].text).to.equal('C');
+				expect(o.children[2].selected).to.equal(undefined);
+
+			});
+
+			test('it toggles the classList (IE workaround)', function () {
+				var node = dom('div');
+				dom.classList.toggle(node, 'foo', false);
+				expect(node.className).to.equal('');
+				dom.classList.toggle(node, 'foo', true);
+				expect(node.className).to.equal('foo');
+				dom.classList.toggle(node, 'foo', false);
+				expect(node.className).to.equal('');
+			});
+
+			test('it should insertAfter, between nodes', function () {
+
+				var
+					parent = dom('div', {}, document.body),
+					sibling = dom('span', { html: 'a' }, parent),
+					end = dom('span', { html: 'c' }, parent),
+					insertNode = dom('span', { html: 'b' });
+
+				dom.insertAfter(sibling, insertNode);
+
+				expect(parent.textContent).to.equal('abc');
+				dom.destroy(parent);
+			});
+
+			test('it should insertAfter, at the end', function () {
+
+				var
+					parent = dom('div', {}, document.body),
+					sibling = dom('span', { html: 'a' }, parent),
+					end = dom('span', { html: 'b' }, parent),
+					insertNode = dom('span', { html: 'c' });
+
+				dom.insertAfter(end, insertNode);
+
+				expect(parent.textContent).to.equal('abc');
+				dom.destroy(parent);
+			});
+
+			test('it should insertAfter, ignoring whitespace', function () {
+
+				var
+					txt,
+					parent = dom.byId('children-with-whitespace'),
+					sibling = dom.query('span'),
+					insertNode = dom('span', { html: 'b' });
+
+				dom.insertAfter(sibling, insertNode);
+
+				txt = parent.textContent.trim().replace(/\s/g, '');
+				expect(txt).to.equal('abcd');
+				dom.destroy(parent);
+			});
+
+			test('it should insert at position', function () {
+				var parent = dom('div', {
+					html: [
+						dom('span', { html: 'A' }),
+						dom('span', { html: 'B' }),
+						dom('span', { html: 'C' })
+					]
+				}, body);
+				dom.place(parent, dom('span', { html: 'Z' }), 1);
+				expect(parent.textContent).to.equal('AZBC');
+				dom.place(parent, dom('span', { html: 'Y' }), 0);
+				expect(parent.textContent).to.equal('YAZBC');
+				dom.place(parent, dom('span', { html: 'W' }), 5);
+				expect(parent.textContent).to.equal('YAZBCW');
+
+				var A = parent.children[1];
+				dom.place(parent, A, 3);
+				expect(parent.textContent).to.equal('YZABCW');
+
+			});
+
+			test('it should remove all children', function () {
+				var node = dom('div', {
+					html: [
+						dom('span'),
+						dom('span'),
+						dom('span')
+					]
+				}, body);
+				expect(node.children.length).to.equal(3);
+				var children = dom.removeChildren(node);
+				expect(node.children.length).to.equal(0);
+				expect(children.length).to.equal(3);
+			});
+		});
+
+		suite('style', function () {
+			test('it should get styles', function () {
+
+				var n = dom.byId('style-test-1');
+
+
+				expect(dom.style(n, 'width')).to.equal(30);
+				expect(dom.style(n, 'min-width')).to.equal(0);
+				expect(dom.style(n, 'height')).to.equal(20);
+				expect(dom.style(n, 'opacity')).to.equal(0.9);
+				expect(dom.style(n, 'border-top-width')).to.equal(3);
+				expect(dom.style(n, 'border-right-width')).to.equal(0);
+				expect(dom.style(n, 'border-left-width')).to.equal(0);
+				expect(dom.style(n, 'z-index')).to.equal(1);
+
+				console.log('',
+					n.style.width,
+					typeof n.style.opacity,
+					n.style.height,
+					dom.style(n, 'width'),
+					dom.style(n, 'min-width'),
+					dom.style(n, 'height'),
+					dom.style(n, 'opacity'),
+					dom.style(n, 'border-top-width'),
+					dom.style(n, 'border-right-width'),
+					dom.style(n, 'border-left-width'),
+					dom.style(n, 'background-color')
+				);
+			});
+
+			test('it should set styles', function () {
+				var n = dom.byId('style-test-blank');
+
+				dom.style(n, {
+					position: 'absolute',
+					zIndex: 1,
+					opacity: 0.5,
+					borderStyle: 'solid',
+					'border-color': 'blue',
+					borderWidth: 2,
+					top: 5,
+					left: 30
+				});
+				dom.style(n, 'width', 10);
+				dom.style(n, 'height', 10);
+				dom.style(n, 'margin', '10%');
+
+				expect(n.style.width).to.equal('10px');
+				expect(n.style.height).to.equal('10px');
+				expect(n.style.position).to.equal('absolute');
+				expect(n.style.zIndex).to.equal('1');
+				expect(n.style.opacity).to.equal('0.5');
+				expect(n.style.borderStyle).to.equal('solid');
+				expect(n.style.borderColor).to.equal('blue');
+				expect(n.style.top).to.equal('5px');
+				expect(n.style.left).to.equal('30px');
+				expect(n.style.margin).to.equal('10%');
+				expect(n.style.borderWidth).to.equal('2px');
+
+
+				expect(dom.style(n, 'margin')).to.equal(0.1);
+				expect(dom.style(n, 'z-index')).to.equal(1);
+				expect(dom.style(n, 'opacity')).to.equal(0.5);
+				expect(dom.style(n, 'top')).to.equal(5);
+				expect(dom.style(n, 'border')).to.equal('2px solid rgb(0, 0, 255)');
+
+				console.log('brd', dom.style(n, 'border'));
+			});
+		});
+
+		suite('box', function () {
+			test('it should get realtive box position', function () {
+				var parent = dom.byId('rel-box');
+				var child1 = dom.byId('rel-box-child-1');
+				var child2 = dom.byId('rel-box-child-2');
+
+				function pos (box) {
+					return box.x + ',' + box.y;
+				}
+
+				expect(pos(dom.relBox(child1))).to.equal('26,26');
+				expect(pos(dom.relBox(child2))).to.equal('26,26');
+				expect(pos(dom.relBox(child2, parent))).to.equal('52,52');
+			});
+		});
+
+	});
+
+	suite('events', function () {
+		test.only('it should connect and disconnect `click` events - and allow functions', function (done) {
+			var value;
+			function data (v) {
+				console.log('value!');
+				value = v;
 			}
-			
-		}
+			var events = [];
+			var node = dom('button', {
+				html: 'Click Me',
+				data: data,
+				onClick: function () {
+					console.log('click!');
+					events.push(1);
+				}
+			}, body);
+
+			emit(node, 'click');
+			expect(events.join(',')).to.equal('1');
+
+			node.data('test');
+			expect(value).to.equal('test');
+
+			dom.destroy(node);
+
+			setTimeout(function () {
+				emit(node, 'click');
+				expect(events.join(',')).to.equal('1');
+				done();
+			}, 100);
+		});
+
+		test('it should connect and disconnect `input` events', function (done) {
+			var events = [];
+			var node = dom('input', {
+				onInput: function () {
+					console.log('input!', node.value);
+					events.push(1);
+				},
+				onChange: function () {
+					console.log('change!', node.value);
+					events.push(1);
+				}
+			}, body);
+
+			node.value = 'a';
+			emit(node, 'input');
+			emit(node, 'change');
+			expect(events.join(',')).to.equal('1,1');
+			node.value = 'b';
+
+			dom.destroy(node);
+
+			setTimeout(function () {
+				emit(node, 'input');
+				emit(node, 'change');
+				expect(events.join(',')).to.equal('1,1');
+				done();
+			}, 100);
+		});
+
+		test('it should connect to complex event names', function (done) {
+			var events = [];
+			var node = dom('button', {
+				html: 'Click Me',
+				onParkAvenue: function () {
+					console.log('event!');
+					events.push(1);
+				},
+				onMoveMeFast: function () {
+					console.log('event!');
+					events.push(1);
+				}
+			}, body);
+
+			emit(node, 'park-avenue');
+			expect(events.join(',')).to.equal('1');
+			emit(node, 'move-me-fast');
+			expect(events.join(',')).to.equal('1,1');
+
+			dom.destroy(node);
+			done();
+		});
+	});
+
+	suite('utils', function () {
+
+		test('it should have incrementing UIDs', function () {
 			var
-				dom = window.dom,
-				node,
-				testNode = dom.byId('test-node'),
-				suite;
-	
-	assert("dom.isNode(dom.byId('test-box-size'))", 'byId');
-	//assert('JSON.stringify(dom.box(dom.byId(\'test-box-size\'))) === \'{"height":25,"width":100,"left":250,"bottom":75,"right":350,"top":50}\'', 'box');
-	
-	assert("dom.uid('test') === 'test-1'", 'uid 1');
-	assert("dom.uid('test') === 'test-2'", 'uid 2');
-	assert("dom.uid('test') === 'test-3'", 'uid 3');
-	
-	node = dom('<div>test string to dom</div>', 'test-node');
-	assert("dom.byId('test-node').innerHTML === '<div>test string to dom</div>'", 'toDom');
-	dom.clean(testNode);
-	
-	assert("testNode.innerHTML === ''", 'clean');
-	assert("dom.isNode(dom('div'))", 'dom simple');
-	assert("dom('div', {html:'foo'}).innerHTML==='foo'", 'dom html');
-	
-	dom('div', {html:'foo'}, 'test-node');
-	assert("testNode.innerHTML === '<div>foo</div>'", 'dom html');
-	dom.clean(testNode);
-	assert("testNode.innerHTML === ''", 'dom clean');
-	
-	dom('div', {id:'my-id', html:'foo', class:'myClass', style:{width:100}, attr:{'data-test':'test attribute'}}, 'test-node');
-	assert('testNode.innerHTML === \'<div id="my-id" class="myClass" style="width: 100px;" data-test="test attribute">foo</div>\'', 'attributes');
-	dom.clean(testNode);
-	
-	dom('div', {html:'one'}, testNode);
-	dom('div', {html:'two'}, testNode, true);
-	assert('testNode.innerHTML === \'<div>two</div><div>one</div>\'', 'prepend');
-	dom.clean(testNode);
-	
-	dom('div', {id:'to-destroy', html:'one!'}, testNode);
-	dom.destroy(dom.byId('to-destroy'));
-	assert("dom.byId('to-destroy')===null", 'destroy');
-	assert("testNode.innerHTML === ''", 'destroy');
-	
-	dom.clean(testNode);
-	dom('div', {html:'one'}, testNode);
-	dom('div', {html:'two'}, testNode, true);
-	dom.clean(testNode);
-	assert("testNode.innerHTML === ''", 'dom clean multiple children');
-	
-	node = dom('div', {class:'foo bar'});
-	assert("dom.classList.contains(node, 'foo')", 'classList.contains');
-	assert("dom.classList.contains(node, 'bar')", 'classList.contains');
-	dom.classList.remove(node, 'foo bar');
-	assert("!dom.classList.contains(node, 'foo')", 'classList.remove');
-	assert("!dom.classList.contains(node, 'bar')", 'classList.remove');
-	dom.classList.add(node, 'bop lop');
-	assert("dom.classList.contains(node, 'bop')", 'classList.add');
-	assert("dom.classList.contains(node, 'lop')", 'classList.add');
-	dom.classList.toggle(node, 'bop');
-	assert("!dom.classList.contains(node, 'bop')", 'classList.toggle');
-	dom.classList.toggle(node, 'bop');
-	assert("dom.classList.contains(node, 'bop')", 'classList.toggle');
-	
-	assert(dom.isNode(dom.query('.query-me.one')), 'query one node');
-	assert(Array.isArray(dom.queryAll('.query-me')), 'query two nodes');
-	
-	
+				id1 = dom.uid('foo'),
+				id2 = dom.uid('foo'),
+				id3 = dom.uid('bar'),
+				id4 = dom.uid('bar'),
+				id5 = dom.uid('bar'),
+				id6 = dom.uid('bar'),
+				id7 = dom.uid();
+
+			expect(id1).to.equal('foo-1');
+			expect(id2).to.equal('foo-2');
+			expect(id3).to.equal('bar-1');
+			expect(id4).to.equal('bar-2');
+			expect(id5).to.equal('bar-3');
+			expect(id6).to.equal('bar-4');
+			expect(id7).to.equal('uid-1');
+		});
+
+		test('it should normalize values', function () {
+			var obj = { a: 1 };
+			expect(dom.normalize(obj)).to.equal(obj);
+			expect(dom.normalize('1')).to.equal(1);
+			expect(dom.normalize('-1')).to.equal(-1);
+			expect(dom.normalize('1.01')).to.equal(1.01);
+			expect(dom.normalize('-1.01')).to.equal(-1.01);
+			expect(dom.normalize('0')).to.equal(0);
+			expect(dom.normalize('true')).to.equal(true);
+			expect(dom.normalize('false')).to.equal(false);
+			expect(dom.normalize('a')).to.equal('a');
+			expect(dom.normalize('12/12/2017')).to.equal('12/12/2017');
+			expect(dom.normalize('12-12-2017')).to.equal('12-12-2017');
+			expect(dom.normalize('14 Street Ave')).to.equal('14 Street Ave');
+			expect(dom.normalize('222-222-2222')).to.equal('222-222-2222');
+			expect(dom.normalize('(222)-222-2222')).to.equal('(222)-222-2222');
+			expect(dom.normalize('12345')).to.equal(12345);
+
+			expect(dom.normalize('-20%')).to.equal('-20%');
+
+			// is there a case for 123abc? password maybe? Can we opt out?
+			// IDs?
+		});
+	});
+
+	mocha.run();
 </script>
+</body>
 </html>

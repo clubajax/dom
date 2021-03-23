@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@clubajax/node-file-managment@^0.1.3":
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/@clubajax/node-file-managment/-/node-file-managment-0.1.3.tgz#38fde48fa586b093bf1a444c4b29e1e6025d56c0"
+  integrity sha512-HpMtiesGnS7ZVhWgj4Uw8Z/NUjX0Hw6rONCFGcc3WuaMkyUdr50ykHJHtP+2+enG7zd/O7xlq/HxvLwIsXiHmg==
+
 abbrev@1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"

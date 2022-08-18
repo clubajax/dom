@@ -4,11 +4,4 @@
   "version": "2.8.7",
   "main": "dom.js",
   "description": "A simple library for creating, and modifying DOM nodes.",
-  "keywords": [
-    "dom",
-    "elements",
-    "nodes",
-    "creation",
-    "manipulation"
-  ]
 }

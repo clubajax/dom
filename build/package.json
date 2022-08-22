@@ -1,14 +1,7 @@
 {
   "author": "Jani-King",
   "name": "@janiking/dom",
-  "version": "2.8.7",
+  "version": "2.8.12",
   "main": "dom.js",
-  "description": "A simple library for creating, and modifying DOM nodes.",
-  "keywords": [
-    "dom",
-    "elements",
-    "nodes",
-    "creation",
-    "manipulation"
-  ]
+  "description": "A simple library for creating, and modifying DOM nodes."
 }

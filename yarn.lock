@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@clubajax/node-file-managment@^0.1.4":
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/@clubajax/node-file-managment/-/node-file-managment-0.1.4.tgz#0b722f42e7e72cbd48d7e1f297366b000b786cf8"
-  integrity sha512-dM5xjaH85QZZc9WfadpCcVO2v89z4Ka9e5pd53uQNsJeFNcM3WbRnJj0870XyM8xcxDwqPsfYzKt/FYw4DtUQQ==
+"@clubajax/node-file-managment@^0.1.7":
+  version "0.1.7"
+  resolved "https://registry.yarnpkg.com/@clubajax/node-file-managment/-/node-file-managment-0.1.7.tgz#e343b87c297c27844607d7d1cb8abeb6542eac15"
+  integrity sha512-cznYnY3EEWNLM9B4B0CpUh4EwulehZIxhpcJpUxP0RwL/bzdbH7EngmNhe+9BxqU7VMXax4xvFON+XepoaegNw==
 
 "@ungap/promise-all-settled@1.1.2":
   version "1.1.2"

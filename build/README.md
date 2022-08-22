@@ -8,16 +8,16 @@ dom uses UMD, so it will work with globals, AMD, or Node-style module exports.
 
 To install using bower:
 
-	bower install @clubajax/dom --save
+	bower install @janiking/dom --save
 	
 Or npm:
 
-    npm install @clubajax/dom --save
+    npm install @janiking/dom --save
     
 You can clone the repository with your generic clone commands as a standalone 
 repository or submodule.
 
-	git clone git://github.com/clubajax/dom.git
+	git clone git://github.com/janiking/dom.git
 
 With AMD, it is recommended that you set the config.path of RequireJS to make `dom` accessible as an
 absolute path.

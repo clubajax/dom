@@ -1,7 +1,7 @@
 {
   "author": "Mike Wilcox @clubajax",
   "name": "@clubajax/dom",
-  "version": "2.8.7",
+  "version": "2.8.12",
   "main": "src/dom.js",
   "description": "A simple library for creating, and modifying DOM nodes.",
   "license": "MIT",
@@ -19,7 +19,7 @@
   "scripts": {
     "start": "grunt dev",
     "build": "node ./scripts/deploy.js",
-    "jk-build": "node ./scripts/deploy.js -jk"
+    "jk": "node ./scripts/deploy.js -jk"
   },
   "keywords": [
     "dom",
@@ -29,7 +29,7 @@
     "manipulation"
   ],
   "devDependencies": {
-    "@clubajax/node-file-managment": "^0.1.4",
+    "@clubajax/node-file-managment": "^0.1.7",
     "chai": "^4.3.4",
     "mocha": "^8.3.2"
   }

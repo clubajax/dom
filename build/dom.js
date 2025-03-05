@@ -456,13 +456,17 @@
 		// in addition to fixing IE11-toggle,
 		// these methods also handle arrays
 		remove: function (node, names) {
-			toArray(names).forEach(function (name) {
-				node.classList.remove(name);
+            toArray(names).forEach(function (name) {
+                if (name) {
+                    node.classList.remove(name);
+                }
 			});
 		},
 		add: function (node, names) {
-			toArray(names).forEach(function (name) {
-				node.classList.add(name);
+            toArray(names).forEach(function (name) {
+                if (name) {
+                    node.classList.add(name);
+                }
 			});
 		},
 		contains: function (node, names) {
@@ -517,8 +521,11 @@
 	function toArray (names) {
 		if (!names) {
 			return [];
-		}
-		return names.split(' ').map(function (name) {
+        }
+        if (Array.isArray(names)) {
+            return names
+        }
+		return names.split(/[\s,]/).map(function (name) {
 			return name.trim();
 		}).filter(function (name) {
 			return !!name;
